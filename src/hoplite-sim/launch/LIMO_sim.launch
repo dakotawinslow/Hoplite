@@ -15,7 +15,7 @@
     </node>
 
     <!-- Launch RViz to visualize the markers -->
-    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find hoplite-sim)/rviz/vLIMO_display.rviz" output="screen">
+    <node name="rviz" pkg="rviz" type="rviz" args="--display-config $(find hoplite-sim)/rviz/vLIMO_display.rviz" output="screen">
         <!-- Ensure you have a proper RViz configuration file -->
     </node>
 </launch>
