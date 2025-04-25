@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+
+<launch>
+    <!-- Use sim time -->
+    <param name="use_sim_time" value="true" />
+    <!-- Start the clock -->
+    <node name="clock" pkg="hoplite-sim" type="sim_clock.py" output="screen">
+        <!-- Add parameters if needed -->
+        <param name="period" value="0.1" />
+    </node>
+
+    <!-- Launch the vLIMO node -->
+    <node name="vLIMO_node" pkg="hoplite-sim" type="vLIMO.py" output="screen">
+        <!-- Add parameters if needed -->
+    </node>
+
+    <!-- Launch RViz to visualize the markers -->
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find hoplite-sim)/rviz/vLIMO_display.rviz" output="screen">
+        <!-- Ensure you have a proper RViz configuration file -->
+    </node>
+</launch>

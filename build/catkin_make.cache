@@ -1,0 +1,2 @@
+hoplite-sim
+-DCATKIN_DEVEL_PREFIX=/home/dakota/hoplite/devel -DCMAKE_INSTALL_PREFIX=/home/dakota/hoplite/install -G Unix Makefiles

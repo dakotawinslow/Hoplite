@@ -1,0 +1,8 @@
+prefix=/home/dakota/hoplite/devel
+
+Name: hoplite-sim
+Description: Description of hoplite-sim
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 
