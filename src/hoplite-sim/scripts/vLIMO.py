@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 import rospy
-from geometry_msgs.msg import Twist
-from std_msgs.msg import Float32MultiArray
+import tf
+from geometry_msgs.msg import Twist, Quaternion
+import tf.transformations
 from visualization_msgs.msg import Marker
 from rosgraph_msgs.msg import Clock
+import math
 
 
-PI = 3.14159265358979323846
+PI = math.pi
 
 class vLIMO_Node:
     def __init__(self):
@@ -19,7 +21,7 @@ class vLIMO_Node:
         self.clock_subscriber = rospy.Subscriber('/clock', Clock, self.clock_tick)
         
         # Publisher to the vector (x, y, theta) message
-        self.vector_publisher = rospy.Publisher('/position', Marker, queue_size=10)
+        self.vector_publisher = rospy.Publisher('/vLIMO1_position', Marker, queue_size=10)
         
         # Rate at which we will publish the vector
         self.rate = rospy.Rate(10)  # 10 Hz
@@ -68,17 +70,18 @@ class vLIMO_Node:
         self.y += self.vy * 0.1
         self.theta += self.vtheta * 0.1
         self.theta = self.theta % (2 * PI)
+        rotation_quaternion = tf.transformations.quaternion_from_euler(0, 0, self.theta)
+
 
         marker = Marker()
         marker.header.frame_id = "base_link"
         marker.type = Marker.ARROW
         marker.pose.position.x = self.x
         marker.pose.position.y = self.y
-        marker.pose.orientation.z = self.theta
-        marker.pose.orientation.w = 1.0
-        marker.scale.x = 20
-        marker.scale.y = 5
-        marker.scale.z = 5
+        marker.pose.orientation = Quaternion(*rotation_quaternion)
+        marker.scale.x = 200
+        marker.scale.y = 50
+        marker.scale.z = 50
         marker.color.r = 1.0
         marker.color.a = 1.0
 
