@@ -36,11 +36,11 @@ class vLIMO_Node:
         self.vx_target = 0.0
         self.vy_target = 0.0
         self.vtheta_target = 0.0
-        self.vx_max = 200
-        self.vy_max = 200
+        self.vx_max = 1000
+        self.vy_max = 1000
         self.vtheta_max = PI/2
-        self.linear_acceleration = 400 # units/s^2
-        self.angular_acceleration = PI/4 # rad/s^2
+        self.linear_acceleration = 1000 # units/s^2
+        self.angular_acceleration = 10 # rad/s^2
         self.clock_time = rospy.Time.now()
         self.prior_step_clock_time = rospy.Time.now()
 

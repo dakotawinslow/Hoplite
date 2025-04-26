@@ -8,8 +8,9 @@ from visualization_msgs.msg import Marker
 from rosgraph_msgs.msg import Clock
 import math
 from matplotlib import colors
+import numpy as np
 
-TIMESTEP = 0.01
+FREQUENCY = 100
 
 class HopliteSoldierNode:
     """ The brain of the hoplite bots. Keeps an internal model of it's state and pulishes
@@ -32,6 +33,8 @@ class HopliteSoldierNode:
         self.goal_subscriber = rospy.Subscriber('/move_base_simple/goal', PoseStamped, self.set_target_position)
 
         self.model = HopliteKinematicModel()
+        self.clock_time = rospy.Time.now()
+        self.prior_step_clock_time = rospy.Time.now()
 
     def set_target_position(self, msg):
         """ Set the target position for the hoplite soldier. This is the position that the
@@ -58,67 +61,80 @@ class HopliteSoldierNode:
         marker.scale.z = 50
         self.target_publisher.publish(marker)
 
-
     def send_velocity_command(self):
         """ Send a velocity command to the hoplite soldier. This is the command that the
         hoplite soldier will use to move.
         """
+        self.clock_time = rospy.Time.now()
+        elapsed_time = (self.clock_time - self.prior_step_clock_time).to_sec()
 
-        # calculate error between current position and target position
-        error_x = self.model.target_x - self.model.position_x
-        error_y = self.model.target_y - self.model.position_y
-        error_theta = self.model.find_angle_error()
+        # calculate error vector
+        error = np.array([self.model.target_x - self.model.position_x,
+                          self.model.target_y - self.model.position_y])
+        
+        # Calculate the distance to the target
+        distance = np.linalg.norm(error)
 
-        # Calculate slowdown factor based on distance to target
-        x_rampdown_dist = 0.5 * self.model.velocity_x ** 2 / self.model.linear_acceleration
-        y_rampdown_dist = 0.5 * self.model.velocity_y ** 2 / self.model.linear_acceleration
-        theta_rampdown_dist = 0.5 * self.model.angular_velocity ** 2 / self.model.angular_acceleration
+        # Calculate the angle to the target
+        angle_to_target = np.arctan2(error[1], error[0])
 
-        # close enough
-        if abs(error_x) < 1:
-            self.model.velocity_x = 0.0
-        # start ramping down velocity if we are close to the target
-        elif abs(error_x) < x_rampdown_dist:
-            self.model.velocity_x -= math.copysign(self.model.linear_acceleration * TIMESTEP, self.model.velocity_x)
-        # ramp up velocity if we are far from the target
-        elif abs(self.model.velocity_x) < self.model.max_velocity_x:
-            self.model.velocity_x += math.copysign(self.model.linear_acceleration * TIMESTEP, error_x)
-        # capped at max velocity
+        current_velocity_norm = math.sqrt(self.model.velocity_x ** 2 + self.model.velocity_y ** 2)
+        current_velocity_angle = np.arctan2(self.model.velocity_y, self.model.velocity_x)
+        angle_error = angle_to_target - current_velocity_angle
+        # Normalize the angle error to the range [-pi, pi]
+        if angle_error > math.pi:
+            angle_error -= 2 * math.pi
+        elif angle_error < -math.pi:
+            angle_error += 2 * math.pi
+
+        rampdown_dist = 0.5 * current_velocity_norm ** 2 / self.model.linear_acceleration
+
+        # Calculate the new velocity based on the distance to the target (for smooth stops)
+        if distance < 1:
+            new_velocity = 0.0
+        elif distance < rampdown_dist:
+            new_velocity = current_velocity_norm - self.model.linear_acceleration * elapsed_time
+        elif current_velocity_norm < self.model.max_velocity_x:
+            new_velocity = current_velocity_norm + self.model.linear_acceleration * elapsed_time
         else:
-            self.model.velocity_x = math.copysign(self.model.max_velocity_x, error_x)
+            new_velocity = self.model.max_velocity_x
 
-        #same for y
-        if abs(error_y) < 1:
-            self.model.velocity_y = 0.0
-        elif abs(error_y) < y_rampdown_dist:
-            self.model.velocity_y -= math.copysign(self.model.linear_acceleration * TIMESTEP, self.model.velocity_y)
-        elif abs(self.model.velocity_y) < self.model.max_velocity_y:
-            self.model.velocity_y += math.copysign(self.model.linear_acceleration * TIMESTEP, error_y)
+        # calculate swingover angle (ignore if we are very slow or stationary)
+        if abs(current_velocity_norm) < 0.1:
+            new_velocity_angle = angle_to_target
+        elif abs(angle_error) < 0.01:
+            new_velocity_angle = current_velocity_angle 
         else:
-            self.model.velocity_y = math.copysign(self.model.max_velocity_y, error_y)
-        # same for theta
-        if abs(error_theta) < 0.01:
-            self.model.angular_velocity = 0.0
-        elif abs(error_theta) < theta_rampdown_dist:    
-            self.model.angular_velocity -= math.copysign(self.model.angular_acceleration * TIMESTEP, self.model.angular_velocity)
-        elif abs(self.model.angular_velocity) < self.model.max_angular_velocity:
-            self.model.angular_velocity += math.copysign(self.model.angular_acceleration * TIMESTEP, error_theta)
+            new_velocity_angle = current_velocity_angle + (self.model.turnaround_acceleration * elapsed_time * np.sign(angle_error))
+            
+        
+        self.model.velocity_x = new_velocity * np.cos(new_velocity_angle)
+        self.model.velocity_y = new_velocity * np.sin(new_velocity_angle)
+
+        theta_error = self.model.find_angle_error()
+        current_angular_velocity = abs(self.model.angular_velocity)
+        angular_rampdown_dist = 0.5 * current_angular_velocity ** 2 / self.model.angular_acceleration
+        if abs(theta_error) < 0.01:
+            new_angular_velocity = 0.0
+        elif abs(theta_error) < angular_rampdown_dist:
+            new_angular_velocity = current_angular_velocity - self.model.angular_acceleration * elapsed_time
+        elif abs(current_angular_velocity) < self.model.max_angular_velocity:
+            new_angular_velocity = current_angular_velocity + self.model.angular_acceleration * elapsed_time
         else:
-            self.model.angular_velocity = math.copysign(self.model.max_angular_velocity, error_theta)
+            new_angular_velocity = self.model.max_angular_velocity
+        self.model.angular_velocity = new_angular_velocity * np.sign(theta_error)
 
         # Update the position model based on the velocity
-        self.model.position_x += self.model.velocity_x * TIMESTEP
-        self.model.position_y += self.model.velocity_y * TIMESTEP
-        self.model.theta += self.model.angular_velocity * TIMESTEP
+        self.model.position_x += self.model.velocity_x * elapsed_time
+        self.model.position_y += self.model.velocity_y * elapsed_time
+        self.model.theta += self.model.angular_velocity * elapsed_time
         self.model.theta = self.model.theta % (2 * math.pi)
-
         # Publish the new velocity command
         twist = Twist()
         twist.linear.x = self.model.velocity_x
         twist.linear.y = self.model.velocity_y
         twist.angular.z = self.model.angular_velocity
         self.command_publisher.publish(twist)
-
         # Publish our position estimate
         marker = Marker()
         marker.header.frame_id = "base_link"
@@ -132,6 +148,24 @@ class HopliteSoldierNode:
         marker.scale.y = 40
         marker.scale.z = 40
         self.position_estimate_publisher.publish(marker)
+        # Publish the target position
+        marker = Marker()
+        marker.header.frame_id = "base_link"
+        marker.type = Marker.ARROW
+        marker.pose = self.model.get_target_pose()
+        color = colors.to_rgba("Magenta")
+        marker.color.r = color[0]
+        marker.color.g = color[1]
+        marker.color.b = color[2]
+        marker.color.a = color[3]
+        marker.scale.x = 200
+        marker.scale.y = 50
+        marker.scale.z = 50
+        self.target_publisher.publish(marker)
+
+        self.prior_step_clock_time = self.clock_time
+
+
 
 
 
@@ -146,11 +180,12 @@ class HopliteKinematicModel:
         self.velocity_y = 0.0
         self.angular_velocity = 0.0
 
-        self.max_velocity_x = 200
-        self.max_velocity_y = 200
+        self.max_velocity_x = 300
+        self.max_velocity_y = 300
         self.max_angular_velocity = math.pi / 2
-        self.linear_acceleration = 400
+        self.linear_acceleration = 200
         self.angular_acceleration = math.pi / 4
+        self.turnaround_acceleration = math.pi / 2
 
         self.target_x = 0.0
         self.target_y = 0.0
@@ -196,6 +231,8 @@ class HopliteKinematicModel:
             error -= 2 * math.pi
         elif error < -math.pi:
             error += 2 * math.pi
+        # log the error
+        # rospy.loginfo("Angle error: %f", error)
         return error
 
 if __name__ == "__main__":
@@ -204,9 +241,10 @@ if __name__ == "__main__":
         hoplite_soldier_node = HopliteSoldierNode()
 
         # Spin the node
+        rate = rospy.Rate(FREQUENCY)
         while not rospy.is_shutdown():
             hoplite_soldier_node.send_velocity_command()
-            rospy.sleep(TIMESTEP)
+            rate.sleep()
     except rospy.ROSInterruptException:
         pass
     except Exception as e:
