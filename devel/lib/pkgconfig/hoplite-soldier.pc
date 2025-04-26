@@ -1,0 +1,8 @@
+prefix=/home/dakota/hoplite/devel
+
+Name: hoplite-soldier
+Description: Description of hoplite-soldier
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

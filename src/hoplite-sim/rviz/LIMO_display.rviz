@@ -8,6 +8,9 @@ Panels:
         - /Grid1
         - /Marker1
         - /Marker1/Status1
+        - /Marker2
+        - /Marker3
+        - /Axes1
       Splitter Ratio: 0.5
     Tree Height: 549
   - Class: rviz/Selection
@@ -56,11 +59,34 @@ Visualization Manager:
       Value: true
     - Class: rviz/Marker
       Enabled: true
-      Marker Topic: /vLIMO1_position
+      Marker Topic: /vLIMO_1/_position
       Name: Marker
       Namespaces:
         "": true
       Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /hoplite_soldier1/target
+      Name: Marker
+      Namespaces:
+        {}
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /hoplite_soldier1/position_estimate
+      Name: Marker
+      Namespaces:
+        "": true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Axes
+      Enabled: true
+      Length: 300
+      Name: Axes
+      Radius: 7
+      Reference Frame: <Fixed Frame>
       Value: true
   Enabled: true
   Global Options:
@@ -89,7 +115,7 @@ Visualization Manager:
   Value: true
   Views:
     Current:
-      Angle: 0
+      Angle: -9.313225746154785e-9
       Class: rviz/TopDownOrtho
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
@@ -99,7 +125,7 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Scale: 1.0393034219741821
+      Scale: 0.37718138098716736
       Target Frame: <Fixed Frame>
       Value: TopDownOrtho (rviz)
       X: 5.000002384185791

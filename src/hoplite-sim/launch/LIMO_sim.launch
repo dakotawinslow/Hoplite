@@ -2,16 +2,43 @@
 
 <launch>
     <!-- Use sim time -->
-    <param name="use_sim_time" value="true" />
+    <param name="use_sim_time" value="False" />
     <!-- Start the clock -->
     <node name="clock" pkg="hoplite-sim" type="sim_clock.py" output="screen">
-        <!-- Add parameters if needed -->
         <param name="period" value="0.1" />
     </node>
 
     <!-- Launch the vLIMO node -->
-    <node name="vLIMO_node" pkg="hoplite-sim" type="vLIMO.py" output="screen">
+    <node name="vLIMO_1" pkg="hoplite-sim" type="vLIMO.py" output="screen">
         <!-- Add parameters if needed -->
+        <param name="robot_name" value="vLIMO_1" />
+    </node>
+
+    <!-- Launch the vLIMO node -->
+    <node name="vLIMO_2" pkg="hoplite-sim" type="vLIMO.py" output="screen">
+        <!-- Add parameters if needed -->
+        <param name="x" value="0" />
+        <param name="y" value="200" />
+        <param name="theta" value="0" />
+        <param name="color" value="blue" />
+    </node>
+
+    <!-- Launch the vLIMO node -->
+    <node name="vLIMO_3" pkg="hoplite-sim" type="vLIMO.py" output="screen">
+        <!-- Add parameters if needed -->
+        <param name="x" value="0" />
+        <param name="y" value="400" />
+        <param name="theta" value="0" />
+        <param name="color" value="green" />
+    </node>
+
+    <!-- Launch the vLIMO node -->
+    <node name="vLIMO_4" pkg="hoplite-sim" type="vLIMO.py" output="screen">
+        <!-- Add parameters if needed -->
+        <param name="x" value="0" />
+        <param name="y" value="600" />
+        <param name="theta" value="0" />
+        <param name="color" value="yellow" />
     </node>
 
     <!-- Launch RViz to visualize the markers -->

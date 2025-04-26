@@ -6,6 +6,7 @@ import tf.transformations
 from visualization_msgs.msg import Marker
 from rosgraph_msgs.msg import Clock
 import math
+from matplotlib import colors
 
 
 PI = math.pi
@@ -13,22 +14,22 @@ PI = math.pi
 class vLIMO_Node:
     def __init__(self):
         # Initialize the node
-        self.name = "vLIMO_1" #TODO Make this a parameter
-        rospy.init_node(self.name, anonymous=True)
+        # self.name = "vLIMO_1" #TODO Make this a parameter
+        rospy.init_node("unspecified_vLIMO", anonymous=False)
+        self.name = rospy.get_name().split("/")[-1]
+
+        self.controller_node = rospy.get_param("~controller_node", default="unspecified_hoplite_controller")
         
         # Subscriber to the Twist message (cmd_vel or your topic) #TODO Make this a parameter
-        self.twist_subscriber = rospy.Subscriber('/cmd_vel', Twist, self.twist_callback)
+        self.twist_subscriber = rospy.Subscriber('/' + self.controller_node + '/cmd_vel', Twist, self.twist_callback)
         self.clock_subscriber = rospy.Subscriber('/clock', Clock, self.clock_tick)
         
         # Publisher to the vector (x, y, theta) message
-        self.vector_publisher = rospy.Publisher('/vLIMO1_position', Marker, queue_size=10)
-        
-        # Rate at which we will publish the vector
-        self.rate = rospy.Rate(10)  # 10 Hz
+        self.vector_publisher = rospy.Publisher('/' + self.name +'/_position', Marker, queue_size=10)
 
-        self.x = 0.0
-        self.y = 0.0
-        self.theta = 0.0
+        self.x = rospy.get_param("~x", default=0.0)
+        self.y = rospy.get_param("~y", default=0.0)
+        self.theta = rospy.get_param("~theta", default=0.0)
         self.vx = 0.0 # velocity in units/s
         self.vy = 0.0
         self.vtheta = 0.0 # velocity in rad/s
@@ -40,14 +41,15 @@ class vLIMO_Node:
         self.vtheta_max = PI/2
         self.linear_acceleration = 400 # units/s^2
         self.angular_acceleration = PI/4 # rad/s^2
-        self.time_step = 0.1 # seconds
-        self.clock_time = 0.0
+        self.clock_time = rospy.Time.now()
+        self.prior_step_clock_time = rospy.Time.now()
+
+        self.color = rospy.get_param("~color", default="red")
+        self.color = colors.to_rgba(self.color)
 
     def clock_tick(self, msg):
-        # This function is called at each clock tick
-        # we expect a clock tick every 0.1 seconds
-
-        self.clock_time = msg.clock.to_sec()
+        self.clock_time = rospy.Time.now()   
+        elapsed_time = (self.clock_time - self.prior_step_clock_time).to_sec()    
 
         error_vx = self.vx_target - self.vx
         error_vy = self.vy_target - self.vy
@@ -66,9 +68,9 @@ class vLIMO_Node:
             self.vtheta = self.vtheta_target
 
         # Update the position based on the velocity
-        self.x += self.vx * 0.1
-        self.y += self.vy * 0.1
-        self.theta += self.vtheta * 0.1
+        self.x += self.vx * elapsed_time
+        self.y += self.vy * elapsed_time
+        self.theta += self.vtheta * elapsed_time
         self.theta = self.theta % (2 * PI)
         rotation_quaternion = tf.transformations.quaternion_from_euler(0, 0, self.theta)
 
@@ -82,8 +84,10 @@ class vLIMO_Node:
         marker.scale.x = 200
         marker.scale.y = 50
         marker.scale.z = 50
-        marker.color.r = 1.0
-        marker.color.a = 1.0
+        marker.color.r = self.color[0]
+        marker.color.g = self.color[1]
+        marker.color.b = self.color[2]
+        marker.color.a = self.color[3]
 
         # Publish the vector message
         self.vector_publisher.publish(marker)
@@ -98,16 +102,12 @@ class vLIMO_Node:
         # # Log the time
         # rospy.loginfo("Time: " + str(self.clock_time))
 
+        self.prior_step_clock_time = self.clock_time
+
     def twist_callback(self, msg):
-        # This function is called when a new Twist message is received
-        # Extract the linear and angular velocities from the Twist message
         self.vx_target = msg.linear.x
         self.vy_target = msg.linear.y
         self.vtheta_target = msg.angular.z
-
-        # Log the received Twist message
-        rospy.loginfo("Received Twist: linear=(" + str(self.vx_target) + ", " + str(self.vy_target) + "), angular=" + str(self.vtheta_target))
-        
 
 if __name__ == '__main__':
     try:
