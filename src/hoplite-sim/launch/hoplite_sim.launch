@@ -9,14 +9,22 @@
     </node>
 
     <!-- Launch the hoplite-soldier node -->
-    <node name="hoplite_soldier1" pkg="hoplite-soldier" type="hoplite-soldier.py" output="screen">
+    <node name="soldier_0" pkg="hoplite-soldier" type="hoplite-soldier.py" output="screen">
+    </node>
 
+    <!-- Launch the hoplite-soldier node -->
+    <node name="soldier_1" pkg="hoplite-soldier" type="hoplite-soldier.py" output="screen">
+    </node>
+
+    <!-- Launch the squad leader -->
+    <node name="squad_leader" pkg="hoplite-squad-leader" type="hoplite-squad-leader.py" output="screen">
+        <param name="soldier_count" value=2 />
     </node>
 
     <!-- Launch the vLIMO node -->
     <node name="vLIMO_1" pkg="hoplite-sim" type="vLIMO.py" output="screen">
         <!-- Add parameters if needed -->
-        <param name="controller_node" value ="hoplite_soldier1" />
+        <param name="controller_node" value ="soldier_1" />
         <param name="x" value="0" />
         <param name="y" value="000" />
         <param name="theta" value="0" />

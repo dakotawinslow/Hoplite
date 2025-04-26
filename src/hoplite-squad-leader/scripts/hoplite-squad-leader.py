@@ -1,0 +1,89 @@
+#!/usr/bin/env python
+
+import rospy
+import tf
+from geometry_msgs.msg import Twist, Quaternion, Pose, PoseStamped
+import tf.transformations
+from visualization_msgs.msg import Marker
+from rosgraph_msgs.msg import Clock
+import math
+from matplotlib import colors
+import numpy as np
+
+class HopliteSquadLeaderNode:
+    """ Squad leader is responsible for interpreting the input commands and deciding where the soldiers
+    go. It receives position updates from each soldier (or the mocap system) and sends pose commands to them 
+    based on the input control point and current operating mode."""
+    def __init__(self):
+        # Initialize the node
+        rospy.init_node("hoplite_squad_leader", anonymous=False)
+        self.name = rospy.get_name().split("/")[-1]
+
+        # Don't forget that soldier_count is a GLOBAL param
+        self.soldier_count = rospy.get_param("soldier_count", default=2)
+
+        # make soldier models
+        self.soldier_models = []
+        self.soldier_subscribers = []
+        self.soldier_publishers = []
+        for i in range(self.soldier_count):
+            soldier_name = "soldier_" + str(i)
+            self.soldier_models.append(SoldierModel())
+            self.soldier_subscribers.append(rospy.Subscriber('/' + soldier_name + '/_position', 
+                                                             Marker, self.soldier_callback, callback_args=i))
+            self.soldier_publishers.append(rospy.Publisher('/' + soldier_name + '/_pose', 
+                                                           PoseStamped, queue_size=10))
+            
+        # Subscriber to the control pose
+        self.twist_subscriber = rospy.Subscriber('/move_base_simple/goal', PoseStamped, self.issue_orders)
+
+        self.mode = 0 # 0: regular polygons
+
+
+    def soldier_callback(self, msg, soldier_index):
+        """ Callback function for the soldier's position update. It receives the position update from the soldier
+        and sends the pose command to the soldier. """
+        self.soldier_models[soldier_index].pose = msg.pose
+
+    def issue_orders(self, msg):
+        """ Callback function for the control pose. It receives the control pose from the user and sends the pose
+        command to the soldiers. """
+
+        if self.soldier_count == 1:
+            # If there is only one soldier, send the pose command directly to the soldier
+            self.soldier_models[0].pose = msg.pose
+            self.soldier_publishers[0].publish(msg)
+            return
+        target_pose = msg.pose
+        if self.mode == 0:
+            orders = self.regular_polygon_formation(target_pose)
+
+    def regular_polygon_formation(self, target_pose):
+        """ This function is responsible for the regular polygon formation. It receives the control pose from the user
+        and sends the pose command to the soldiers. """
+
+        spacing = 700 # mm between soldiers
+        radius = spacing / (2 * np.cos((self.soldier_count - 2) * np.pi / (2 * self.soldier_count)))
+        angle = 2 * np.pi / self.soldier_count
+        for i in range(self.soldier_count):
+            soldier_pose = Pose()
+            soldier_pose.position.x = target_pose.position.x + radius * np.cos(i * angle)
+            soldier_pose.position.y = target_pose.position.y + radius * np.sin(i * angle)
+            soldier_pose.position.z = 0.0
+            # soldier_pose.orientation = Quaternion(*tf.transformations.quaternion_from_euler(0, 0, i * angle))
+            soldier_pose.orientation = target_pose.orientation
+            self.soldier_models[i].pose = soldier_pose
+            self.soldier_publishers[i].publish(PoseStamped(pose=soldier_pose))
+        
+    
+
+class SoldierModel:
+    """ This class is responsible for the soldier's model. It receives the pose command from the squad leader
+    and sends the position update to the squad leader. It also has a controller that takes care of the soldier's
+    movement."""
+    def __init__(self):
+        self.pose = Pose()
+        self.pose.position.x = 0.0
+        self.pose.position.y = 0.0
+        self.pose.position.z = 0.0
+        self.pose.orientation = Quaternion(*tf.transformations.quaternion_from_euler(0, 0, 0))

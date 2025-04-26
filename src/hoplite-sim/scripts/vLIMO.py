@@ -25,7 +25,7 @@ class vLIMO_Node:
         self.clock_subscriber = rospy.Subscriber('/clock', Clock, self.clock_tick)
         
         # Publisher to the vector (x, y, theta) message
-        self.vector_publisher = rospy.Publisher('/' + self.name +'/_position', Marker, queue_size=10)
+        self.vector_publisher = rospy.Publisher('/' + self.controller_node +'/_position', Marker, queue_size=10)
 
         self.x = rospy.get_param("~x", default=0.0)
         self.y = rospy.get_param("~y", default=0.0)

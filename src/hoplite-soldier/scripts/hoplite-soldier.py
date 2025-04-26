@@ -30,7 +30,7 @@ class HopliteSoldierNode:
         self.target_publisher = rospy.Publisher('/' + self.name + '/target', Marker, queue_size=10)
 
         # self.position_subscriber = rospy.Subscriber('/' + self.name + '/position', Pose, self.set_target_position)
-        self.goal_subscriber = rospy.Subscriber('/move_base_simple/goal', PoseStamped, self.set_target_position)
+        self.goal_subscriber = rospy.Subscriber('/' + self.name + "/_pose" , PoseStamped, self.set_target_position)
 
         self.model = HopliteKinematicModel()
         self.clock_time = rospy.Time.now()
@@ -180,8 +180,8 @@ class HopliteKinematicModel:
         self.velocity_y = 0.0
         self.angular_velocity = 0.0
 
-        self.max_velocity_x = 300
-        self.max_velocity_y = 300
+        self.max_velocity_x = 800
+        self.max_velocity_y = 800
         self.max_angular_velocity = math.pi / 2
         self.linear_acceleration = 200
         self.angular_acceleration = math.pi / 4

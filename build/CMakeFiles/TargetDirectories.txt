@@ -43,6 +43,13 @@
 /home/dakota/hoplite/build/hoplite-soldier/CMakeFiles/_catkin_empty_exported_target.dir
 /home/dakota/hoplite/build/hoplite-soldier/CMakeFiles/rebuild_cache.dir
 /home/dakota/hoplite/build/hoplite-soldier/CMakeFiles/install.dir
+/home/dakota/hoplite/build/hoplite-squad-leader/CMakeFiles/install/strip.dir
+/home/dakota/hoplite/build/hoplite-squad-leader/CMakeFiles/edit_cache.dir
+/home/dakota/hoplite/build/hoplite-squad-leader/CMakeFiles/list_install_components.dir
+/home/dakota/hoplite/build/hoplite-squad-leader/CMakeFiles/test.dir
+/home/dakota/hoplite/build/hoplite-squad-leader/CMakeFiles/install/local.dir
+/home/dakota/hoplite/build/hoplite-squad-leader/CMakeFiles/rebuild_cache.dir
+/home/dakota/hoplite/build/hoplite-squad-leader/CMakeFiles/install.dir
 /home/dakota/hoplite/build/hoplite-sim/CMakeFiles/install/strip.dir
 /home/dakota/hoplite/build/hoplite-sim/CMakeFiles/edit_cache.dir
 /home/dakota/hoplite/build/hoplite-sim/CMakeFiles/list_install_components.dir

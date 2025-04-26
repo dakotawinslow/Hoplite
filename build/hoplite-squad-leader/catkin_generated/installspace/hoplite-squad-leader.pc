@@ -1,0 +1,8 @@
+prefix=/home/dakota/hoplite/install
+
+Name: hoplite-squad-leader
+Description: Description of hoplite-squad-leader
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 
