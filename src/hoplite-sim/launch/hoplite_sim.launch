@@ -3,6 +3,7 @@
 <launch>
     <!-- Use sim time -->
     <param name="use_sim_time" value="False" />
+    <param name="soldier_count" value="3" />
     <!-- Start the clock -->
     <node name="clock" pkg="hoplite-sim" type="sim_clock.py" output="screen">
         <param name="period" value="0.1" />
@@ -16,9 +17,22 @@
     <node name="soldier_1" pkg="hoplite-soldier" type="hoplite-soldier.py" output="screen">
     </node>
 
+    <!-- Launch the hoplite-soldier node -->
+    <node name="soldier_2" pkg="hoplite-soldier" type="hoplite-soldier.py" output="screen">
+    </node>
+
     <!-- Launch the squad leader -->
     <node name="squad_leader" pkg="hoplite-squad-leader" type="hoplite-squad-leader.py" output="screen">
-        <param name="soldier_count" value=2 />
+    </node>
+
+    <!-- Launch the vLIMO node -->
+    <node name="vLIMO_0" pkg="hoplite-sim" type="vLIMO.py" output="screen">
+        <!-- Add parameters if needed -->
+        <param name="controller_node" value ="soldier_0" />
+        <param name="x" value="0" />
+        <param name="y" value="0" />
+        <param name="theta" value="0" />
+        <param name="color" value="blue" />
     </node>
 
     <!-- Launch the vLIMO node -->
@@ -26,9 +40,19 @@
         <!-- Add parameters if needed -->
         <param name="controller_node" value ="soldier_1" />
         <param name="x" value="0" />
-        <param name="y" value="000" />
+        <param name="y" value="500" />
         <param name="theta" value="0" />
-        <param name="color" value="blue" />
+        <param name="color" value="red" />
+    </node>
+
+    <!-- Launch the vLIMO node -->
+    <node name="vLIMO_2" pkg="hoplite-sim" type="vLIMO.py" output="screen">
+        <!-- Add parameters if needed -->
+        <param name="controller_node" value ="soldier_2" />
+        <param name="x" value="500" />
+        <param name="y" value="0" />
+        <param name="theta" value="0" />
+        <param name="color" value="green" />
     </node>
 
     <!-- Launch RViz to visualize the markers -->

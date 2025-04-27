@@ -36,7 +36,9 @@ class HopliteSquadLeaderNode:
             
         # Subscriber to the control pose
         self.twist_subscriber = rospy.Subscriber('/move_base_simple/goal', PoseStamped, self.issue_orders)
-
+        # Publish the current goal
+        self.goal_publisher = rospy.Publisher('/squad_goal', Marker, queue_size=10)
+        
         self.mode = 0 # 0: regular polygons
 
 
@@ -49,6 +51,25 @@ class HopliteSquadLeaderNode:
         """ Callback function for the control pose. It receives the control pose from the user and sends the pose
         command to the soldiers. """
 
+        # Publish the current goal
+        goal_marker = Marker()
+        goal_marker.header.frame_id = "base_link"
+        goal_marker.header.stamp = rospy.Time.now()
+        goal_marker.type = Marker.ARROW
+        goal_marker.action = Marker.ADD
+        goal_marker.pose = msg.pose
+        goal_marker.scale.x = 150
+        goal_marker.scale.y = 15
+        goal_marker.scale.z = 15
+        marker_color = "grey"
+        marker_color = colors.to_rgba(marker_color)
+        goal_marker.color.r = marker_color[0]
+        goal_marker.color.g = marker_color[1]
+        goal_marker.color.b = marker_color[2]
+        goal_marker.color.a = marker_color[3]
+        self.goal_publisher.publish(goal_marker)
+
+
         if self.soldier_count == 1:
             # If there is only one soldier, send the pose command directly to the soldier
             self.soldier_models[0].pose = msg.pose
@@ -56,7 +77,10 @@ class HopliteSquadLeaderNode:
             return
         target_pose = msg.pose
         if self.mode == 0:
-            orders = self.regular_polygon_formation(target_pose)
+            self.regular_polygon_formation(target_pose)
+
+        for i in range(self.soldier_count):
+            self.soldier_publishers[i].publish(PoseStamped(pose=self.soldier_models[i].pose))
 
     def regular_polygon_formation(self, target_pose):
         """ This function is responsible for the regular polygon formation. It receives the control pose from the user
@@ -65,16 +89,22 @@ class HopliteSquadLeaderNode:
         spacing = 700 # mm between soldiers
         radius = spacing / (2 * np.cos((self.soldier_count - 2) * np.pi / (2 * self.soldier_count)))
         angle = 2 * np.pi / self.soldier_count
+        target_angle = tf.transformations.euler_from_quaternion([target_pose.orientation.x,
+                                                                 target_pose.orientation.y,
+                                                                 target_pose.orientation.z,
+                                                                 target_pose.orientation.w])[2]
+        start_angle = target_angle + np.pi / 2
+
         for i in range(self.soldier_count):
             soldier_pose = Pose()
-            soldier_pose.position.x = target_pose.position.x + radius * np.cos(i * angle)
-            soldier_pose.position.y = target_pose.position.y + radius * np.sin(i * angle)
+            soldier_pose.position.x = target_pose.position.x + radius * np.cos(((i * angle) + start_angle))
+            soldier_pose.position.y = target_pose.position.y + radius * np.sin((i * angle) + start_angle)
             soldier_pose.position.z = 0.0
             # soldier_pose.orientation = Quaternion(*tf.transformations.quaternion_from_euler(0, 0, i * angle))
             soldier_pose.orientation = target_pose.orientation
             self.soldier_models[i].pose = soldier_pose
-            self.soldier_publishers[i].publish(PoseStamped(pose=soldier_pose))
-        
+            # self.soldier_publishers[i].publish(PoseStamped(pose=soldier_pose))
+
     
 
 class SoldierModel:
@@ -87,3 +117,11 @@ class SoldierModel:
         self.pose.position.y = 0.0
         self.pose.position.z = 0.0
         self.pose.orientation = Quaternion(*tf.transformations.quaternion_from_euler(0, 0, 0))
+        self.minimum_spacing = 200 # mm
+
+if __name__ == "__main__":
+    try:
+        node = HopliteSquadLeaderNode()
+        rospy.spin()
+    except rospy.ROSInterruptException:
+        pass

@@ -4,13 +4,7 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
-        - /Global Options1
-        - /Grid1
-        - /Marker1
-        - /Marker1/Status1
-        - /Marker2
-        - /Marker3
-        - /Axes1
+        - /0_position1/Status1
       Splitter Ratio: 0.5
     Tree Height: 549
   - Class: rviz/Selection
@@ -59,24 +53,80 @@ Visualization Manager:
       Value: true
     - Class: rviz/Marker
       Enabled: true
-      Marker Topic: /vLIMO_1/_position
-      Name: Marker
+      Marker Topic: /soldier_0/_position
+      Name: 0_position
       Namespaces:
         "": true
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
       Enabled: true
-      Marker Topic: /hoplite_soldier1/target
-      Name: Marker
+      Marker Topic: /soldier_0/position_estimate
+      Name: 0_position_estimate
       Namespaces:
-        {}
+        "": true
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
       Enabled: true
-      Marker Topic: /hoplite_soldier1/position_estimate
-      Name: Marker
+      Marker Topic: /soldier_0/target
+      Name: 0_target
+      Namespaces:
+        "": true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /soldier_1/_position
+      Name: 1_position
+      Namespaces:
+        "": true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /soldier_1/position_estimate
+      Name: 1_position_estimate
+      Namespaces:
+        "": true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /soldier_1/target
+      Name: 1_target
+      Namespaces:
+        "": true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /soldier_2/_position
+      Name: 2_position
+      Namespaces:
+        "": true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /soldier_2/position_estimate
+      Name: 2_position_estimate
+      Namespaces:
+        "": true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /soldier_2/target
+      Name: 2_target
+      Namespaces:
+        "": true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /squad_goal
+      Name: Squad Goals
       Namespaces:
         "": true
       Queue Size: 100
@@ -125,7 +175,7 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Scale: 0.37718138098716736
+      Scale: 0.199050635099411
       Target Frame: <Fixed Frame>
       Value: TopDownOrtho (rviz)
       X: 5.000002384185791

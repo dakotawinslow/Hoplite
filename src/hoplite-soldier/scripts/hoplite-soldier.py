@@ -1,253 +1,267 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
+# -*- coding: utf-8 -*-
+
+"""
+hoplite_soldier.py
+
+A ROS1 Melodic node for running a hoplite‐style robot:
+  - maintains a kinematic model (mm + rad units)
+  - smoothly drives toward a target pose
+  - publishes cmd_vel + viz markers
+"""
+
+from __future__ import print_function
+
+import math
+import numpy as np
 
 import rospy
 import tf
 from geometry_msgs.msg import Twist, Quaternion, Pose, PoseStamped
-import tf.transformations
 from visualization_msgs.msg import Marker
-from rosgraph_msgs.msg import Clock
-import math
 from matplotlib import colors
-import numpy as np
 
-FREQUENCY = 100
 
-class HopliteSoldierNode:
-    """ The brain of the hoplite bots. Keeps an internal model of it's state and pulishes
-    commands to the motion platform (or simulator node). Accepts location targeting commands 
-    from the platoon leader and publishes it's current state on /{name}/location. Also can 
-    read location data from the motion capture system to update it's internal model.
+# -----------------------------------------------------------------------------
+# Constants
+# -----------------------------------------------------------------------------
+DEFAULT_FREQUENCY = 100  # Hz
+FRAME_ID = "base_link"
+
+
+# -----------------------------------------------------------------------------
+# Kinematic model (pure math, no ROS)
+# -----------------------------------------------------------------------------
+class HopliteKinematicModel(object):
+    """
+    Simple 2D kinematic model in mm and radians.
+    All state updates and velocity/acceleration computations live here.
     """
 
     def __init__(self):
-        # Initialize the node
-        rospy.init_node("Hoplite_Soldier", anonymous=False)
-        self.name = rospy.get_name().split("/")[-1]
-
-        # Publisher to the vector (x, y, theta) message
-        self.command_publisher = rospy.Publisher('/' + self.name + '/cmd_vel', Twist, queue_size=10)
-        self.position_estimate_publisher = rospy.Publisher('/' + self.name + '/position_estimate', Marker, queue_size=10)
-        self.target_publisher = rospy.Publisher('/' + self.name + '/target', Marker, queue_size=10)
-
-        # self.position_subscriber = rospy.Subscriber('/' + self.name + '/position', Pose, self.set_target_position)
-        self.goal_subscriber = rospy.Subscriber('/' + self.name + "/_pose" , PoseStamped, self.set_target_position)
-
-        self.model = HopliteKinematicModel()
-        self.clock_time = rospy.Time.now()
-        self.prior_step_clock_time = rospy.Time.now()
-
-    def set_target_position(self, msg):
-        """ Set the target position for the hoplite soldier. This is the position that the
-        hoplite soldier will try to reach.
-        """
-        # make us tolerant of both Pose and PoseStamped messages
-        if type(msg) == PoseStamped:
-            msg = msg.pose
-
-        self.model.set_target_pose(msg)
-
-        # Publish the target position
-        marker = Marker()
-        marker.header.frame_id = "base_link"
-        marker.type = Marker.ARROW
-        marker.pose = self.model.get_target_pose()
-        color = colors.to_rgba("Magenta")
-        marker.color.r = color[0]
-        marker.color.g = color[1]
-        marker.color.b = color[2]
-        marker.color.a = color[3]
-        marker.scale.x = 200
-        marker.scale.y = 50
-        marker.scale.z = 50
-        self.target_publisher.publish(marker)
-
-    def send_velocity_command(self):
-        """ Send a velocity command to the hoplite soldier. This is the command that the
-        hoplite soldier will use to move.
-        """
-        self.clock_time = rospy.Time.now()
-        elapsed_time = (self.clock_time - self.prior_step_clock_time).to_sec()
-
-        # calculate error vector
-        error = np.array([self.model.target_x - self.model.position_x,
-                          self.model.target_y - self.model.position_y])
-        
-        # Calculate the distance to the target
-        distance = np.linalg.norm(error)
-
-        # Calculate the angle to the target
-        angle_to_target = np.arctan2(error[1], error[0])
-
-        current_velocity_norm = math.sqrt(self.model.velocity_x ** 2 + self.model.velocity_y ** 2)
-        current_velocity_angle = np.arctan2(self.model.velocity_y, self.model.velocity_x)
-        angle_error = angle_to_target - current_velocity_angle
-        # Normalize the angle error to the range [-pi, pi]
-        if angle_error > math.pi:
-            angle_error -= 2 * math.pi
-        elif angle_error < -math.pi:
-            angle_error += 2 * math.pi
-
-        rampdown_dist = 0.5 * current_velocity_norm ** 2 / self.model.linear_acceleration
-
-        # Calculate the new velocity based on the distance to the target (for smooth stops)
-        if distance < 1:
-            new_velocity = 0.0
-        elif distance < rampdown_dist:
-            new_velocity = current_velocity_norm - self.model.linear_acceleration * elapsed_time
-        elif current_velocity_norm < self.model.max_velocity_x:
-            new_velocity = current_velocity_norm + self.model.linear_acceleration * elapsed_time
-        else:
-            new_velocity = self.model.max_velocity_x
-
-        # calculate swingover angle (ignore if we are very slow or stationary)
-        if abs(current_velocity_norm) < 0.1:
-            new_velocity_angle = angle_to_target
-        elif abs(angle_error) < 0.01:
-            new_velocity_angle = current_velocity_angle 
-        else:
-            new_velocity_angle = current_velocity_angle + (self.model.turnaround_acceleration * elapsed_time * np.sign(angle_error))
-            
-        
-        self.model.velocity_x = new_velocity * np.cos(new_velocity_angle)
-        self.model.velocity_y = new_velocity * np.sin(new_velocity_angle)
-
-        theta_error = self.model.find_angle_error()
-        current_angular_velocity = abs(self.model.angular_velocity)
-        angular_rampdown_dist = 0.5 * current_angular_velocity ** 2 / self.model.angular_acceleration
-        if abs(theta_error) < 0.01:
-            new_angular_velocity = 0.0
-        elif abs(theta_error) < angular_rampdown_dist:
-            new_angular_velocity = current_angular_velocity - self.model.angular_acceleration * elapsed_time
-        elif abs(current_angular_velocity) < self.model.max_angular_velocity:
-            new_angular_velocity = current_angular_velocity + self.model.angular_acceleration * elapsed_time
-        else:
-            new_angular_velocity = self.model.max_angular_velocity
-        self.model.angular_velocity = new_angular_velocity * np.sign(theta_error)
-
-        # Update the position model based on the velocity
-        self.model.position_x += self.model.velocity_x * elapsed_time
-        self.model.position_y += self.model.velocity_y * elapsed_time
-        self.model.theta += self.model.angular_velocity * elapsed_time
-        self.model.theta = self.model.theta % (2 * math.pi)
-        # Publish the new velocity command
-        twist = Twist()
-        twist.linear.x = self.model.velocity_x
-        twist.linear.y = self.model.velocity_y
-        twist.angular.z = self.model.angular_velocity
-        self.command_publisher.publish(twist)
-        # Publish our position estimate
-        marker = Marker()
-        marker.header.frame_id = "base_link"
-        marker.type = Marker.ARROW
-        marker.pose = self.model.get_current_pose()
-        marker.color.r = 0.0
-        marker.color.g = 1.0
-        marker.color.b = 0.0
-        marker.color.a = 1.0
-        marker.scale.x = 250
-        marker.scale.y = 40
-        marker.scale.z = 40
-        self.position_estimate_publisher.publish(marker)
-        # Publish the target position
-        marker = Marker()
-        marker.header.frame_id = "base_link"
-        marker.type = Marker.ARROW
-        marker.pose = self.model.get_target_pose()
-        color = colors.to_rgba("Magenta")
-        marker.color.r = color[0]
-        marker.color.g = color[1]
-        marker.color.b = color[2]
-        marker.color.a = color[3]
-        marker.scale.x = 200
-        marker.scale.y = 50
-        marker.scale.z = 50
-        self.target_publisher.publish(marker)
-
-        self.prior_step_clock_time = self.clock_time
-
-
-
-
-
-class HopliteKinematicModel:
-    def __init__(self):
-        "All units are mm (or mm/s or mm/s^2) and radians (or rad/s or rad/s^2)."
-
-        self.position_x = 0.0
-        self.position_y = 0.0
+        # pose
+        self.x = 0.0
+        self.y = 0.0
         self.theta = 0.0
-        self.velocity_x = 0.0
-        self.velocity_y = 0.0
-        self.angular_velocity = 0.0
 
-        self.max_velocity_x = 800
-        self.max_velocity_y = 800
-        self.max_angular_velocity = math.pi / 2
-        self.linear_acceleration = 200
-        self.angular_acceleration = math.pi / 4
-        self.turnaround_acceleration = math.pi / 2
+        # velocities
+        self.vx = 0.0
+        self.vy = 0.0
+        self.omega = 0.0
 
-        self.target_x = 0.0
-        self.target_y = 0.0
-        self.target_theta = 0.0
+        # limits & accelerations
+        self.max_v = 800.0
+        self.max_omega = math.pi / 2.0
+        self.linear_acc = 200.0
+        self.angular_acc = math.pi / 4.0
+        self.turn_acc = math.pi / 2.0
 
-    def get_position(self):
-        return ((self.position_x, self.position_y, self.theta))
-    
-    def get_velocity(self):
-        return ((self.velocity_x, self.velocity_y, self.angular_velocity))
-    
-    def get_acceleration(self):
-        return ((self.acceleration_x, self.acceleration_y, self.angular_acceleration))
-    
-    def get_current_pose(self):
-        orientation = tf.transformations.quaternion_from_euler(0, 0, self.theta)
-        pose = Pose()
-        pose.position.x = self.position_x
-        pose.position.y = self.position_y
-        pose.orientation = Quaternion(*orientation)
-        return pose
-    
-    def get_target_pose(self):
-        orientation = tf.transformations.quaternion_from_euler(0, 0, self.target_theta)
-        pose = Pose()
-        pose.position.x = self.target_x
-        pose.position.y = self.target_y
-        pose.orientation = Quaternion(*orientation)
-        return pose
-    
-    def set_target_pose(self, pose):
-        """ Set the target position for the hoplite soldier. This is the position that the
-        hoplite soldier will try to reach.
+        # target
+        self.tx = 0.0
+        self.ty = 0.0
+        self.ttheta = 0.0
+
+    def set_target(self, pose):
+        """Set a new target pose (Pose message)."""
+        self.tx = pose.position.x
+        self.ty = pose.position.y
+        _, _, self.ttheta = tf.transformations.euler_from_quaternion(
+            [pose.orientation.x, pose.orientation.y,
+             pose.orientation.z, pose.orientation.w]
+        )
+
+    def angle_error(self):
+        """Compute signed smallest‐angle difference to target heading."""
+        err = self.ttheta - self.theta
+        if err > math.pi:
+            err -= 2 * math.pi
+        elif err < -math.pi:
+            err += 2 * math.pi
+        return err
+
+    def update(self, dt):
         """
-        self.target_x = pose.position.x
-        self.target_y = pose.position.y
-        self.target_theta = tf.transformations.euler_from_quaternion([pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w])[2]
-    
-    def find_angle_error(self):
-        """ Find the angle error between the current angle and the target angle. """
-        error = self.target_theta - self.theta
-        if error > math.pi:
-            error -= 2 * math.pi
-        elif error < -math.pi:
-            error += 2 * math.pi
-        # log the error
-        # rospy.loginfo("Angle error: %f", error)
-        return error
+        Advance the model by dt seconds:
+         - compute new vx,vy,omega
+         - integrate to update x,y,theta
+        Returns a Twist message ready to publish.
+        """
+        # --- linear velocity control ---
+        # vector to target
+        ex, ey = self.tx - self.x, self.ty - self.y
+        dist = math.hypot(ex, ey)
+        angle_to_goal = math.atan2(ey, ex)
+
+        v_norm = math.hypot(self.vx, self.vy)
+        v_angle = math.atan2(self.vy, self.vx) if v_norm > 0 else angle_to_goal
+
+        # ramp‐down distance
+        ramp_down = 0.5 * (v_norm ** 2) / self.linear_acc
+
+        # decide new speed magnitude
+        if dist < 1.0:
+            new_speed = 0.0
+        elif dist < ramp_down:
+            new_speed = v_norm - self.linear_acc * dt
+        elif v_norm < self.max_v:
+            new_speed = v_norm + self.linear_acc * dt
+        else:
+            new_speed = self.max_v
+
+        # decide new velocity direction
+        ang_err = angle_to_goal - v_angle
+        # normalize
+        if ang_err > math.pi:
+            ang_err -= 2 * math.pi
+        elif ang_err < -math.pi:
+            ang_err += 2 * math.pi
+
+        if v_norm < 0.1:
+            new_dir = angle_to_goal
+        elif abs(ang_err) < 0.01:
+            new_dir = v_angle
+        else:
+            new_dir = v_angle + self.turn_acc * dt * np.sign(ang_err)
+
+        # set vx, vy
+        self.vx = new_speed * math.cos(new_dir)
+        self.vy = new_speed * math.sin(new_dir)
+
+        # --- angular velocity control ---
+        th_err = self.angle_error()
+        w = abs(self.omega)
+        ang_ramp = 0.5 * (w ** 2) / self.angular_acc
+
+        if abs(th_err) < 0.01:
+            w_new = 0.0
+        elif abs(th_err) < ang_ramp:
+            w_new = w - self.angular_acc * dt
+        elif w < self.max_omega:
+            w_new = w + self.angular_acc * dt
+        else:
+            w_new = self.max_omega
+
+        self.omega = w_new * np.sign(th_err)
+
+        # --- integrate pose ---
+        self.x += self.vx * dt
+        self.y += self.vy * dt
+        self.theta = (self.theta + self.omega * dt) % (2 * math.pi)
+
+        # build Twist
+        twist = Twist()
+        twist.linear.x = self.vx
+        twist.linear.y = self.vy
+        twist.angular.z = self.omega
+        return twist
+
+    def current_pose(self):
+        """Return a geometry_msgs/Pose of the current state."""
+        quat = tf.transformations.quaternion_from_euler(0, 0, self.theta)
+        p = Pose()
+        p.position.x = self.x
+        p.position.y = self.y
+        p.orientation = Quaternion(*quat)
+        return p
+
+    def target_pose(self):
+        """Return a geometry_msgs/Pose of the target state."""
+        quat = tf.transformations.quaternion_from_euler(0, 0, self.ttheta)
+        p = Pose()
+        p.position.x = self.tx
+        p.position.y = self.ty
+        p.orientation = Quaternion(*quat)
+        return p
+
+
+# -----------------------------------------------------------------------------
+# Helper for making RViz markers
+# -----------------------------------------------------------------------------
+class MarkerFactory(object):
+    @staticmethod
+    def make_arrow(pose, rgba, scale, frame_id=FRAME_ID):
+        """
+        Create an ARROW marker at `pose` with RGBA tuple and scale tuple (x,y,z).
+        """
+        m = Marker()
+        m.header.frame_id = frame_id
+        m.type = Marker.ARROW
+        m.pose = pose
+        m.color.r, m.color.g, m.color.b, m.color.a = rgba
+        m.scale.x, m.scale.y, m.scale.z = scale
+        return m
+
+    @staticmethod
+    def rgba_from_name(name):
+        """Use matplotlib to convert a CSS color name to RGBA (0–1 floats)."""
+        return colors.to_rgba(name)
+
+
+# -----------------------------------------------------------------------------
+# ROS node (wires model + factory into pubs/subs)
+# -----------------------------------------------------------------------------
+class HopliteSoldierNode(object):
+    def __init__(self):
+        # init node
+        rospy.init_node("hoplite_soldier", anonymous=False)
+        self.name = rospy.get_name().lstrip("/")
+
+        # parameters
+        freq = rospy.get_param("~frequency", DEFAULT_FREQUENCY)
+
+        # publishers & subscribers
+        self.cmd_pub = rospy.Publisher("/{}/cmd_vel".format(self.name),
+                                       Twist, queue_size=10)
+        self.pose_pub = rospy.Publisher("/{}/position_estimate".format(self.name),
+                                        Marker, queue_size=10)
+        self.tgt_pub = rospy.Publisher("/{}/target".format(self.name),
+                                       Marker, queue_size=10)
+
+        rospy.Subscriber("/{}/_pose".format(self.name),
+                         PoseStamped, self.on_target)
+
+        # model + timing
+        self.model = HopliteKinematicModel()
+        self.last_time = rospy.Time.now()
+
+        # timer for control loop
+        rospy.Timer(rospy.Duration(1.0 / freq), self.on_timer)
+        rospy.loginfo("HopliteSoldierNode started at %d Hz", freq)
+
+    def on_target(self, msg):
+        """Callback when a new PoseStamped target arrives."""
+        self.model.set_target(msg.pose)
+        # publish a magenta arrow at the target
+        rgba = MarkerFactory.rgba_from_name("magenta")
+        marker = MarkerFactory.make_arrow(
+            self.model.target_pose(), rgba, scale=(200, 50, 50))
+        self.tgt_pub.publish(marker)
+        rospy.loginfo("New target: x=%.1f y=%.1f θ=%.2f",
+                      self.model.tx, self.model.ty, self.model.ttheta)
+
+    def on_timer(self, event):
+        """Control loop: compute dt, update model, publish cmd_vel + markers."""
+        now = event.current_real
+        dt = (now - self.last_time).to_sec()
+        self.last_time = now
+
+        # compute and send velocity
+        twist = self.model.update(dt)
+        self.cmd_pub.publish(twist)
+
+        # publish current pose marker (green)
+        green = (0.0, 1.0, 0.0, 1.0)
+        pm = MarkerFactory.make_arrow(
+            self.model.current_pose(), green, scale=(250, 20, 20))
+        self.pose_pub.publish(pm)
+
 
 if __name__ == "__main__":
     try:
-        # Create the node
-        hoplite_soldier_node = HopliteSoldierNode()
-
-        # Spin the node
-        rate = rospy.Rate(FREQUENCY)
-        while not rospy.is_shutdown():
-            hoplite_soldier_node.send_velocity_command()
-            rate.sleep()
+        HopliteSoldierNode()
+        rospy.spin()
     except rospy.ROSInterruptException:
         pass
     except Exception as e:
-        rospy.logerr("Exception in Hoplite Soldier Node: %s", e)
-        raise e
-    
+        rospy.logerr("Unhandled exception: %s", e)
+        raise
