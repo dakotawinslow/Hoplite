@@ -14,6 +14,7 @@ from __future__ import print_function
 
 import math
 import numpy as np
+import re  # Added for regex matching
 
 import rospy
 import tf
@@ -173,6 +174,54 @@ class HopliteKinematicModel(object):
         p.orientation = Quaternion(*quat)
         return p
 
+# -----------------------------------------------------------------------------
+# Squad Member Tracking
+# -----------------------------------------------------------------------------
+class SquadMember(object):
+    """
+    Maintains information about another soldier in the squad.
+    Tracks position and velocity data.
+    """
+    
+    def __init__(self, soldier_id):
+        self.soldier_id = soldier_id
+        self.pose = None  # Will store the latest Pose
+        self.twist = None  # Will store the latest Twist
+        self.last_pose_time = None
+        self.last_vel_time = None
+        
+    def update_pose(self, pose_msg, timestamp):
+        """Update the soldier's position from a PoseStamped message."""
+        self.pose = pose_msg.pose
+        self.last_pose_time = timestamp
+        
+    def update_velocity(self, twist_msg, timestamp):
+        """Update the soldier's velocity from a Twist message."""
+        self.twist = twist_msg
+        self.last_vel_time = timestamp
+        
+    def get_position(self):
+        """Return position as (x, y, theta) if available, None otherwise."""
+        if self.pose is None:
+            return None
+        
+        x = self.pose.position.x
+        y = self.pose.position.y
+        _, _, theta = tf.transformations.euler_from_quaternion(
+            [self.pose.orientation.x, self.pose.orientation.y,
+             self.pose.orientation.z, self.pose.orientation.w]
+        )
+        return (x, y, theta)
+        
+    def get_velocity(self):
+        """Return velocity as (vx, vy, omega) if available, None otherwise."""
+        if self.twist is None:
+            return None
+            
+        vx = self.twist.linear.x
+        vy = self.twist.linear.y
+        omega = self.twist.angular.z
+        return (vx, vy, omega)
 
 # -----------------------------------------------------------------------------
 # Helper for making RViz markers
@@ -209,6 +258,18 @@ class HopliteSoldierNode(object):
         # parameters
         freq = rospy.get_param("~frequency", DEFAULT_FREQUENCY)
 
+        # Get soldier count from parameter server
+        self.soldier_count = rospy.get_param("/soldier_count", 0)
+        self.squad_members = {}
+        
+        # Get our own ID (from the node name)
+        match = re.search(r'soldier_(\d+)', self.name)
+        if match:
+            self.soldier_id = int(match.group(1))
+        else:
+            self.soldier_id = None
+            rospy.logwarn("Could not determine own soldier ID from name: %s", self.name)
+        
         # publishers & subscribers
         self.cmd_pub = rospy.Publisher("/{}/cmd_vel".format(self.name),
                                        Twist, queue_size=10)
@@ -219,14 +280,74 @@ class HopliteSoldierNode(object):
 
         rospy.Subscriber("/{}/_pose".format(self.name),
                          PoseStamped, self.on_target)
+        
+        # Setup squad tracking
+        self.setup_squad_tracking()
 
         # model + timing
         self.model = HopliteKinematicModel()
         self.last_time = rospy.Time.now()
+        self.last_squad_log = rospy.Time.now()
 
         # timer for control loop
         rospy.Timer(rospy.Duration(1.0 / freq), self.on_timer)
         rospy.loginfo("HopliteSoldierNode started at %d Hz", freq)
+
+    def setup_squad_tracking(self):
+        """Setup subscribers for tracking other squad members."""
+        if self.soldier_count <= 1:
+            rospy.loginfo("No other squad members to track (soldier_count = %d)", self.soldier_count)
+            return
+            
+        for i in range(1, self.soldier_count + 1):
+            # Skip ourselves
+            if i == self.soldier_id:
+                continue
+                
+            # Create squad member object
+            squad_member = SquadMember(i)
+            self.squad_members[i] = squad_member
+            
+            # Subscribe to pose and velocity
+            pose_topic = "/soldier_{0}/_pose".format(i)
+            vel_topic = "/soldier_{0}/cmd_vel".format(i)
+            
+            rospy.Subscriber(pose_topic, PoseStamped, 
+                            lambda msg, sid=i: self.on_squad_pose(msg, sid))
+            rospy.Subscriber(vel_topic, Twist, 
+                            lambda msg, sid=i: self.on_squad_velocity(msg, sid))
+            
+            rospy.loginfo("Tracking squad member %d", i)
+
+    def on_squad_pose(self, msg, soldier_id):
+        """Callback for when another soldier's pose is updated."""
+        if soldier_id in self.squad_members:
+            self.squad_members[soldier_id].update_pose(msg, rospy.Time.now())
+            
+    def on_squad_velocity(self, msg, soldier_id):
+        """Callback for when another soldier's velocity is updated."""
+        if soldier_id in self.squad_members:
+            self.squad_members[soldier_id].update_velocity(msg, rospy.Time.now())
+            
+    def log_squad_status(self):
+        """Log the current status of all squad members."""
+        if not self.squad_members:
+            return
+            
+        rospy.loginfo("Squad status:")
+        for soldier_id, member in self.squad_members.items():
+            pos = member.get_position()
+            vel = member.get_velocity()
+            
+            if pos is not None:
+                x, y, theta = pos
+                rospy.loginfo("  Soldier %d: pos=(%.1f, %.1f, %.2f)", 
+                             soldier_id, x, y, theta)
+            
+            if vel is not None:
+                vx, vy, omega = vel
+                rospy.loginfo("  Soldier %d: vel=(%.1f, %.1f, %.2f)", 
+                             soldier_id, vx, vy, omega)
 
     def on_target(self, msg):
         """Callback when a new PoseStamped target arrives."""
@@ -254,6 +375,11 @@ class HopliteSoldierNode(object):
         pm = MarkerFactory.make_arrow(
             self.model.current_pose(), green, scale=(250, 20, 20))
         self.pose_pub.publish(pm)
+        
+        # Log squad status approximately every 5 seconds
+        if (now - self.last_squad_log).to_sec() >= 5.0:
+            self.log_squad_status()
+            self.last_squad_log = now
 
 
 if __name__ == "__main__":
