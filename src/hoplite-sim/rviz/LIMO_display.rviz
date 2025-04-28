@@ -72,6 +72,22 @@ Visualization Manager:
       Marker Topic: /soldier_0/target
       Name: 0_target
       Namespaces:
+        {}
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /soldier_0/robot_radius
+      Name: 0_radius
+      Namespaces:
+        "": true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /soldier_0/neighbor_dist
+      Name: 0_vision
+      Namespaces:
         "": true
       Queue Size: 100
       Value: true
@@ -95,6 +111,14 @@ Visualization Manager:
       Enabled: true
       Marker Topic: /soldier_1/target
       Name: 1_target
+      Namespaces:
+        {}
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /soldier_1/robot_radius
+      Name: 1_radius
       Namespaces:
         "": true
       Queue Size: 100
@@ -120,6 +144,14 @@ Visualization Manager:
       Marker Topic: /soldier_2/target
       Name: 2_target
       Namespaces:
+        {}
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /soldier_2/robot_radius
+      Name: 2_radius
+      Namespaces:
         "": true
       Queue Size: 100
       Value: true
@@ -128,7 +160,7 @@ Visualization Manager:
       Marker Topic: /squad_goal
       Name: Squad Goals
       Namespaces:
-        "": true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/Axes
@@ -137,6 +169,47 @@ Visualization Manager:
       Name: Axes
       Radius: 7
       Reference Frame: <Fixed Frame>
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /soldier_0/orca/avoidance_vectors
+      Name: 0_viz
+      Namespaces:
+        {}
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /soldier_0/orca/collision_points
+      Name: 0_viz
+      Namespaces:
+        {}
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /soldier_0/orca/neighbor_info
+      Name: 0_viz
+      Namespaces:
+        neighbor_distances: true
+        neighbor_velocities: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /soldier_0/orca/velocity_obstacles
+      Name: 0_viz
+      Namespaces:
+        {}
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /soldier_0/orca/velocity_vectors
+      Name: 0_viz
+      Namespaces:
+        velocity_vectors: true
+      Queue Size: 100
       Value: true
   Enabled: true
   Global Options:
@@ -165,7 +238,7 @@ Visualization Manager:
   Value: true
   Views:
     Current:
-      Angle: -9.313225746154785e-9
+      Angle: -0.05999999865889549
       Class: rviz/TopDownOrtho
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
@@ -175,11 +248,11 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Scale: 0.199050635099411
+      Scale: 0.24542787671089172
       Target Frame: <Fixed Frame>
       Value: TopDownOrtho (rviz)
-      X: 5.000002384185791
-      Y: 5.000000953674316
+      X: 205.618408203125
+      Y: 189.653076171875
     Saved: ~
 Window Geometry:
   Displays:

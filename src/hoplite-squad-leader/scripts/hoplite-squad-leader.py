@@ -39,7 +39,8 @@ class HopliteSquadLeaderNode:
         # Publish the current goal
         self.goal_publisher = rospy.Publisher('/squad_goal', Marker, queue_size=10)
         
-        self.mode = 0 # 0: regular polygons
+        self.mode = 1 # 0: regular polygons, 1: Circle the wagons
+        self.start_angle = 0.
 
 
     def soldier_callback(self, msg, soldier_index):
@@ -78,6 +79,8 @@ class HopliteSquadLeaderNode:
         target_pose = msg.pose
         if self.mode == 0:
             self.regular_polygon_formation(target_pose)
+        elif self.mode == 1:
+            self.circled_wagons_formation(target_pose)
 
         for i in range(self.soldier_count):
             self.soldier_publishers[i].publish(PoseStamped(pose=self.soldier_models[i].pose))
@@ -86,24 +89,49 @@ class HopliteSquadLeaderNode:
         """ This function is responsible for the regular polygon formation. It receives the control pose from the user
         and sends the pose command to the soldiers. """
 
-        spacing = 700 # mm between soldiers
+        spacing = 1000 # mm between soldiers
         radius = spacing / (2 * np.cos((self.soldier_count - 2) * np.pi / (2 * self.soldier_count)))
         angle = 2 * np.pi / self.soldier_count
         target_angle = tf.transformations.euler_from_quaternion([target_pose.orientation.x,
                                                                  target_pose.orientation.y,
                                                                  target_pose.orientation.z,
                                                                  target_pose.orientation.w])[2]
-        start_angle = target_angle + np.pi / 2
+        self.start_angle = target_angle + np.pi / 2
 
         for i in range(self.soldier_count):
             soldier_pose = Pose()
-            soldier_pose.position.x = target_pose.position.x + radius * np.cos(((i * angle) + start_angle))
-            soldier_pose.position.y = target_pose.position.y + radius * np.sin((i * angle) + start_angle)
+            soldier_pose.position.x = target_pose.position.x + radius * np.cos(((i * angle) + self.start_angle))
+            soldier_pose.position.y = target_pose.position.y + radius * np.sin((i * angle) + self.start_angle)
             soldier_pose.position.z = 0.0
             # soldier_pose.orientation = Quaternion(*tf.transformations.quaternion_from_euler(0, 0, i * angle))
             soldier_pose.orientation = target_pose.orientation
             self.soldier_models[i].pose = soldier_pose
             # self.soldier_publishers[i].publish(PoseStamped(pose=soldier_pose))
+
+    def circled_wagons_formation(self, target_pose):
+        spacing = 1000 # mm between soldiers
+        radius = spacing / (2 * np.cos((self.soldier_count - 2) * np.pi / (2 * self.soldier_count)))
+        angle = 2 * np.pi / self.soldier_count
+
+        RPM = 2
+        rate = 10
+        sleeper = rospy.Rate(rate)
+        tick_angle = 2 * math.pi / (rate * 60 / RPM)
+        while self.mode == 1:
+            for i in range(self.soldier_count):
+                soldier_pose = Pose()
+                soldier_pose.position.x = target_pose.position.x + radius * np.cos(((i * angle) + self.start_angle))
+                soldier_pose.position.y = target_pose.position.y + radius * np.sin((i * angle) + self.start_angle)
+                soldier_pose.position.z = 0.0
+                soldier_pose.orientation = Quaternion(*tf.transformations.quaternion_from_euler(0, 0, i * angle))
+                # soldier_pose.orientation = target_pose.orientation
+                self.soldier_models[i].pose = soldier_pose
+                self.soldier_publishers[i].publish(PoseStamped(pose=self.soldier_models[i].pose))
+            self.start_angle += tick_angle
+            self.start_angle = self.start_angle % (2 * math.pi)
+            sleeper.sleep()
+
+
 
     
 

@@ -26,22 +26,25 @@ def clock_publisher():
 
 
     while not rospy.is_shutdown():
-        # Create the clock message
-        clock_msg = Clock()
-        clock_msg.clock = rospy.Time(clock_time)
+        # if rospy.get_param('~publish_clock', False):
+        if True:
+            # Create the clock message
+            clock_msg = Clock()
+            clock_msg.clock = rospy.Time(clock_time)
 
-        # Publish the clock message
-        clock_pub.publish(clock_msg)
+            # Publish the clock message
+            clock_pub.publish(clock_msg)
 
-        # Log the clock time
-        # rospy.loginfo("Clock time: " + str(clock_time) )
+            # Log the clock time
+            # rospy.loginfo("Clock time: " + str(clock_time) )
 
-        # Increment the clock time
-        clock_time += period
+            # Increment the clock time
+            clock_time += period
 
-        # Sleep for the remaining time
-        # rate.sleep()
-        time.sleep(period)
+            # Sleep for the remaining time
+            # rate.sleep()
+            time.sleep(period) # 4x slowdown
+            # rate.sleep()
 
 
 if __name__ == '__main__':
