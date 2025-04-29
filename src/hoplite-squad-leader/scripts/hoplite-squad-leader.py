@@ -39,7 +39,7 @@ class HopliteSquadLeaderNode:
         # Publish the current goal
         self.goal_publisher = rospy.Publisher('/squad_goal', Marker, queue_size=10)
         
-        self.mode = 1 # 0: regular polygons, 1: Circle the wagons
+        self.mode = 0 # 0: regular polygons, 1: Circle the wagons
         self.start_angle = 0.
 
 
