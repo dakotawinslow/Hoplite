@@ -1,8 +1,8 @@
-# Install script for directory: /home/dakota/hoplite/src/hoplite-soldier
+# Install script for directory: /home/agilex/hoplite/src/hoplite-soldier
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/dakota/hoplite/install")
+  set(CMAKE_INSTALL_PREFIX "/home/agilex/hoplite/install")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -37,18 +37,23 @@ if(NOT DEFINED CMAKE_CROSSCOMPILING)
   set(CMAKE_CROSSCOMPILING "FALSE")
 endif()
 
+# Set default install directory permissions.
+if(NOT DEFINED CMAKE_OBJDUMP)
+  set(CMAKE_OBJDUMP "/usr/bin/objdump")
+endif()
+
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/dakota/hoplite/build/hoplite-soldier/catkin_generated/installspace/hoplite-soldier.pc")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/agilex/hoplite/build/hoplite-soldier/catkin_generated/installspace/hoplite-soldier.pc")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/hoplite-soldier/cmake" TYPE FILE FILES
-    "/home/dakota/hoplite/build/hoplite-soldier/catkin_generated/installspace/hoplite-soldierConfig.cmake"
-    "/home/dakota/hoplite/build/hoplite-soldier/catkin_generated/installspace/hoplite-soldierConfig-version.cmake"
+    "/home/agilex/hoplite/build/hoplite-soldier/catkin_generated/installspace/hoplite-soldierConfig.cmake"
+    "/home/agilex/hoplite/build/hoplite-soldier/catkin_generated/installspace/hoplite-soldierConfig-version.cmake"
     )
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/hoplite-soldier" TYPE FILE FILES "/home/dakota/hoplite/src/hoplite-soldier/package.xml")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/hoplite-soldier" TYPE FILE FILES "/home/agilex/hoplite/src/hoplite-soldier/package.xml")
 endif()
 

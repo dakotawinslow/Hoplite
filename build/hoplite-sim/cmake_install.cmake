@@ -1,8 +1,8 @@
-# Install script for directory: /home/dakota/hoplite/src/hoplite-sim
+# Install script for directory: /home/agilex/hoplite/src/hoplite-sim
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/dakota/hoplite/install")
+  set(CMAKE_INSTALL_PREFIX "/home/agilex/hoplite/install")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -37,18 +37,23 @@ if(NOT DEFINED CMAKE_CROSSCOMPILING)
   set(CMAKE_CROSSCOMPILING "FALSE")
 endif()
 
+# Set default install directory permissions.
+if(NOT DEFINED CMAKE_OBJDUMP)
+  set(CMAKE_OBJDUMP "/usr/bin/objdump")
+endif()
+
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/dakota/hoplite/build/hoplite-sim/catkin_generated/installspace/hoplite-sim.pc")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/agilex/hoplite/build/hoplite-sim/catkin_generated/installspace/hoplite-sim.pc")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/hoplite-sim/cmake" TYPE FILE FILES
-    "/home/dakota/hoplite/build/hoplite-sim/catkin_generated/installspace/hoplite-simConfig.cmake"
-    "/home/dakota/hoplite/build/hoplite-sim/catkin_generated/installspace/hoplite-simConfig-version.cmake"
+    "/home/agilex/hoplite/build/hoplite-sim/catkin_generated/installspace/hoplite-simConfig.cmake"
+    "/home/agilex/hoplite/build/hoplite-sim/catkin_generated/installspace/hoplite-simConfig-version.cmake"
     )
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/hoplite-sim" TYPE FILE FILES "/home/dakota/hoplite/src/hoplite-sim/package.xml")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/hoplite-sim" TYPE FILE FILES "/home/agilex/hoplite/src/hoplite-sim/package.xml")
 endif()
 

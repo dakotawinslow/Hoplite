@@ -1,8 +1,8 @@
-# Install script for directory: /home/dakota/hoplite/src
+# Install script for directory: /home/agilex/hoplite/src
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/dakota/hoplite/install")
+  set(CMAKE_INSTALL_PREFIX "/home/agilex/hoplite/install")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -37,6 +37,11 @@ if(NOT DEFINED CMAKE_CROSSCOMPILING)
   set(CMAKE_CROSSCOMPILING "FALSE")
 endif()
 
+# Set default install directory permissions.
+if(NOT DEFINED CMAKE_OBJDUMP)
+  set(CMAKE_OBJDUMP "/usr/bin/objdump")
+endif()
+
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   
       if (NOT EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}")
@@ -49,91 +54,95 @@ endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/home/dakota/hoplite/install/_setup_util.py")
+   "/home/agilex/hoplite/install/_setup_util.py")
   if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-file(INSTALL DESTINATION "/home/dakota/hoplite/install" TYPE PROGRAM FILES "/home/dakota/hoplite/build/catkin_generated/installspace/_setup_util.py")
+  file(INSTALL DESTINATION "/home/agilex/hoplite/install" TYPE PROGRAM FILES "/home/agilex/hoplite/build/catkin_generated/installspace/_setup_util.py")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/home/dakota/hoplite/install/env.sh")
+   "/home/agilex/hoplite/install/env.sh")
   if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-file(INSTALL DESTINATION "/home/dakota/hoplite/install" TYPE PROGRAM FILES "/home/dakota/hoplite/build/catkin_generated/installspace/env.sh")
+  file(INSTALL DESTINATION "/home/agilex/hoplite/install" TYPE PROGRAM FILES "/home/agilex/hoplite/build/catkin_generated/installspace/env.sh")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/home/dakota/hoplite/install/setup.bash;/home/dakota/hoplite/install/local_setup.bash")
+   "/home/agilex/hoplite/install/setup.bash;/home/agilex/hoplite/install/local_setup.bash")
   if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-file(INSTALL DESTINATION "/home/dakota/hoplite/install" TYPE FILE FILES
-    "/home/dakota/hoplite/build/catkin_generated/installspace/setup.bash"
-    "/home/dakota/hoplite/build/catkin_generated/installspace/local_setup.bash"
+  file(INSTALL DESTINATION "/home/agilex/hoplite/install" TYPE FILE FILES
+    "/home/agilex/hoplite/build/catkin_generated/installspace/setup.bash"
+    "/home/agilex/hoplite/build/catkin_generated/installspace/local_setup.bash"
     )
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/home/dakota/hoplite/install/setup.sh;/home/dakota/hoplite/install/local_setup.sh")
+   "/home/agilex/hoplite/install/setup.sh;/home/agilex/hoplite/install/local_setup.sh")
   if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-file(INSTALL DESTINATION "/home/dakota/hoplite/install" TYPE FILE FILES
-    "/home/dakota/hoplite/build/catkin_generated/installspace/setup.sh"
-    "/home/dakota/hoplite/build/catkin_generated/installspace/local_setup.sh"
+  file(INSTALL DESTINATION "/home/agilex/hoplite/install" TYPE FILE FILES
+    "/home/agilex/hoplite/build/catkin_generated/installspace/setup.sh"
+    "/home/agilex/hoplite/build/catkin_generated/installspace/local_setup.sh"
     )
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/home/dakota/hoplite/install/setup.zsh;/home/dakota/hoplite/install/local_setup.zsh")
+   "/home/agilex/hoplite/install/setup.zsh;/home/agilex/hoplite/install/local_setup.zsh")
   if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-file(INSTALL DESTINATION "/home/dakota/hoplite/install" TYPE FILE FILES
-    "/home/dakota/hoplite/build/catkin_generated/installspace/setup.zsh"
-    "/home/dakota/hoplite/build/catkin_generated/installspace/local_setup.zsh"
+  file(INSTALL DESTINATION "/home/agilex/hoplite/install" TYPE FILE FILES
+    "/home/agilex/hoplite/build/catkin_generated/installspace/setup.zsh"
+    "/home/agilex/hoplite/build/catkin_generated/installspace/local_setup.zsh"
     )
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/home/dakota/hoplite/install/.rosinstall")
+   "/home/agilex/hoplite/install/.rosinstall")
   if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-file(INSTALL DESTINATION "/home/dakota/hoplite/install" TYPE FILE FILES "/home/dakota/hoplite/build/catkin_generated/installspace/.rosinstall")
+  file(INSTALL DESTINATION "/home/agilex/hoplite/install" TYPE FILE FILES "/home/agilex/hoplite/build/catkin_generated/installspace/.rosinstall")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/dakota/hoplite/build/gtest/cmake_install.cmake")
-  include("/home/dakota/hoplite/build/hoplite-soldier/cmake_install.cmake")
-  include("/home/dakota/hoplite/build/hoplite-squad-leader/cmake_install.cmake")
-  include("/home/dakota/hoplite/build/hoplite-sim/cmake_install.cmake")
+  include("/home/agilex/hoplite/build/gtest/cmake_install.cmake")
+  include("/home/agilex/hoplite/build/hoplite-soldier/cmake_install.cmake")
+  include("/home/agilex/hoplite/build/hoplite-squad-leader/cmake_install.cmake")
+  include("/home/agilex/hoplite/build/joystick_control/cmake_install.cmake")
+  include("/home/agilex/hoplite/build/limo_ros/limo_bringup/cmake_install.cmake")
+  include("/home/agilex/hoplite/build/limo_ros/limo_description/cmake_install.cmake")
+  include("/home/agilex/hoplite/build/hoplite-sim/cmake_install.cmake")
+  include("/home/agilex/hoplite/build/limo_ros/limo_base/cmake_install.cmake")
 
 endif()
 
@@ -145,5 +154,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/dakota/hoplite/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/agilex/hoplite/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

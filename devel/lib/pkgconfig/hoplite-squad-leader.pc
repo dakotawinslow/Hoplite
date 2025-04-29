@@ -1,4 +1,4 @@
-prefix=/home/dakota/hoplite/devel
+prefix=/home/agilex/hoplite/devel
 
 Name: hoplite-squad-leader
 Description: Description of hoplite-squad-leader

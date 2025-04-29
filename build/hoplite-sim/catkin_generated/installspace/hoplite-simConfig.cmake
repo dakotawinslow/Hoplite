@@ -67,14 +67,14 @@ set(hoplite-sim_CONFIG_INCLUDED TRUE)
 
 # set variables for source/devel/install prefixes
 if("FALSE" STREQUAL "TRUE")
-  set(hoplite-sim_SOURCE_PREFIX /home/dakota/hoplite/src/hoplite-sim)
-  set(hoplite-sim_DEVEL_PREFIX /home/dakota/hoplite/devel)
+  set(hoplite-sim_SOURCE_PREFIX /home/agilex/hoplite/src/hoplite-sim)
+  set(hoplite-sim_DEVEL_PREFIX /home/agilex/hoplite/devel)
   set(hoplite-sim_INSTALL_PREFIX "")
   set(hoplite-sim_PREFIX ${hoplite-sim_DEVEL_PREFIX})
 else()
   set(hoplite-sim_SOURCE_PREFIX "")
   set(hoplite-sim_DEVEL_PREFIX "")
-  set(hoplite-sim_INSTALL_PREFIX /home/dakota/hoplite/install)
+  set(hoplite-sim_INSTALL_PREFIX /home/agilex/hoplite/install)
   set(hoplite-sim_PREFIX ${hoplite-sim_INSTALL_PREFIX})
 endif()
 
@@ -154,7 +154,7 @@ foreach(library ${libraries})
     set(lib_path "")
     set(lib "${library}-NOTFOUND")
     # since the path where the library is found is returned we have to iterate over the paths manually
-    foreach(path /home/dakota/hoplite/install/lib;/home/dakota/hoplite/devel/lib;/opt/ros/melodic/lib)
+    foreach(path /home/agilex/hoplite/install/lib;/home/agilex/hoplite/devel/lib;/home/agilex/agilex_ws/devel/lib;/opt/ros/melodic/lib)
       find_library(lib ${library}
         PATHS ${path}
         NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)

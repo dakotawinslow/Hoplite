@@ -1,8 +1,8 @@
-# Install script for directory: /home/dakota/hoplite/src/hoplite-squad-leader
+# Install script for directory: /home/agilex/hoplite/src/hoplite-squad-leader
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/dakota/hoplite/install")
+  set(CMAKE_INSTALL_PREFIX "/home/agilex/hoplite/install")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -37,18 +37,23 @@ if(NOT DEFINED CMAKE_CROSSCOMPILING)
   set(CMAKE_CROSSCOMPILING "FALSE")
 endif()
 
+# Set default install directory permissions.
+if(NOT DEFINED CMAKE_OBJDUMP)
+  set(CMAKE_OBJDUMP "/usr/bin/objdump")
+endif()
+
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/dakota/hoplite/build/hoplite-squad-leader/catkin_generated/installspace/hoplite-squad-leader.pc")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/agilex/hoplite/build/hoplite-squad-leader/catkin_generated/installspace/hoplite-squad-leader.pc")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/hoplite-squad-leader/cmake" TYPE FILE FILES
-    "/home/dakota/hoplite/build/hoplite-squad-leader/catkin_generated/installspace/hoplite-squad-leaderConfig.cmake"
-    "/home/dakota/hoplite/build/hoplite-squad-leader/catkin_generated/installspace/hoplite-squad-leaderConfig-version.cmake"
+    "/home/agilex/hoplite/build/hoplite-squad-leader/catkin_generated/installspace/hoplite-squad-leaderConfig.cmake"
+    "/home/agilex/hoplite/build/hoplite-squad-leader/catkin_generated/installspace/hoplite-squad-leaderConfig-version.cmake"
     )
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/hoplite-squad-leader" TYPE FILE FILES "/home/dakota/hoplite/src/hoplite-squad-leader/package.xml")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/hoplite-squad-leader" TYPE FILE FILES "/home/agilex/hoplite/src/hoplite-squad-leader/package.xml")
 endif()
 

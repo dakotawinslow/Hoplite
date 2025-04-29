@@ -7,4 +7,4 @@
 # new environment variables
 
 # modified environment variables
-export PWD='/home/dakota/hoplite/build'
+export PWD='/home/agilex/hoplite/build'

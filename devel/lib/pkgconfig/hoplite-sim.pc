@@ -1,4 +1,4 @@
-prefix=/home/dakota/hoplite/devel
+prefix=/home/agilex/hoplite/devel
 
 Name: hoplite-sim
 Description: Description of hoplite-sim
