@@ -24,3 +24,10 @@ A system for coordinated movement of AgileX LIMO Robots using a gamepad-style co
 
 - Port simulation to mocap space
     - Replace simulator data with Mocap data while retaining same logic and heirarchy
+
+- Nintendo switch controller support
+    I want to control the bot with a wireless bluetooth controller. Newer versions of the linux kernel ship with the required drivers out-of-the-box, but our Nvidia Jetson does not. Thankfully, there is a module project to bring this functionality to older linux's.
+
+    Obviously we will have to comile this ourselves - precompiled binaries for every system config is not feasable. This works to our benefit anyway, since it means we can comile for our unusual flavor of linux.
+
+    Unfortunately, there is an issue - the code expects a definition ("LED_ON") that our system doesn't have. We can define it by hand to cross this gap.

@@ -1,2 +1,0 @@
-hoplite-sim:hoplite-soldier:hoplite-squad-leader:joystick_control:limo_ros/limo_base:limo_ros/limo_bringup:limo_ros/limo_description
--DCATKIN_DEVEL_PREFIX=/home/agilex/hoplite/devel -DCMAKE_INSTALL_PREFIX=/home/agilex/hoplite/install -G Unix Makefiles

@@ -1,8 +1,0 @@
-prefix=/home/agilex/hoplite/devel
-
-Name: hoplite-squad-leader
-Description: Description of hoplite-squad-leader
-Version: 0.0.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 
