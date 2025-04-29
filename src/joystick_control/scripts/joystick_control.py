@@ -2,6 +2,7 @@
 
 import rospy
 from sensor_msgs.msg import Joy
+from geometry_msgs.msg import Twist, Quaternion, Pose, PoseStamped
 from visualization_msgs.msg import Marker
 from tf.transformations import quaternion_from_euler
 from matplotlib import colors
@@ -21,6 +22,7 @@ class control_point(object):
     
     self.joy_subscriber = rospy.Subscriber('/joy', Joy, self.joy_callback)
     self.marker_publisher = rospy.Publisher('/joystick_controller/marker', Marker, queue_size=10)
+    self.twist_publisher = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
     
   def joy_callback(self, msg):
     """ Callback function for the joystick input. It receives the joystick input and updates the control point. """
@@ -58,6 +60,13 @@ class control_point(object):
     marker.color.b = color[2]
     marker.color.a = 1.0
     self.marker_publisher.publish(marker)
+
+  def publish_twist(self):
+    twist = Twist()
+    twist.linear.x = self.x_vel
+    twist.linear.y = self.y_vel
+    twist.angular.z = self.theta_vel
+    self.twist_publisher.publish(twist)
 
 if __name__ == '__main__':
   try:
