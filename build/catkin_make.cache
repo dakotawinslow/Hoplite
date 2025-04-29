@@ -1,2 +1,2 @@
-hoplite-sim:hoplite-soldier:hoplite-squad-leader
+hoplite-sim:hoplite-soldier:hoplite-squad-leader:joystick_control
 -DCATKIN_DEVEL_PREFIX=/home/dakota/hoplite/devel -DCMAKE_INSTALL_PREFIX=/home/dakota/hoplite/install -G Unix Makefiles

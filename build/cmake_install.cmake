@@ -133,6 +133,7 @@ if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   include("/home/dakota/hoplite/build/gtest/cmake_install.cmake")
   include("/home/dakota/hoplite/build/hoplite-soldier/cmake_install.cmake")
   include("/home/dakota/hoplite/build/hoplite-squad-leader/cmake_install.cmake")
+  include("/home/dakota/hoplite/build/joystick_control/cmake_install.cmake")
   include("/home/dakota/hoplite/build/hoplite-sim/cmake_install.cmake")
 
 endif()

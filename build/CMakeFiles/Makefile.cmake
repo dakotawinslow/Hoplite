@@ -16,6 +16,7 @@ set(CMAKE_MAKEFILE_DEPENDS
   "hoplite-sim/catkin_generated/package.cmake"
   "hoplite-soldier/catkin_generated/package.cmake"
   "hoplite-squad-leader/catkin_generated/package.cmake"
+  "joystick_control/catkin_generated/package.cmake"
   "/home/dakota/hoplite/src/CMakeLists.txt"
   "/home/dakota/hoplite/src/hoplite-sim/CMakeLists.txt"
   "/home/dakota/hoplite/src/hoplite-sim/package.xml"
@@ -23,6 +24,8 @@ set(CMAKE_MAKEFILE_DEPENDS
   "/home/dakota/hoplite/src/hoplite-soldier/package.xml"
   "/home/dakota/hoplite/src/hoplite-squad-leader/CMakeLists.txt"
   "/home/dakota/hoplite/src/hoplite-squad-leader/package.xml"
+  "/home/dakota/hoplite/src/joystick_control/CMakeLists.txt"
+  "/home/dakota/hoplite/src/joystick_control/package.xml"
   "/opt/ros/melodic/share/catkin/cmake/../package.xml"
   "/opt/ros/melodic/share/catkin/cmake/all.cmake"
   "/opt/ros/melodic/share/catkin/cmake/assert.cmake"
@@ -156,6 +159,7 @@ set(CMAKE_MAKEFILE_PRODUCTS
   "gtest/googlemock/gtest/CMakeFiles/CMakeDirectoryInformation.cmake"
   "hoplite-soldier/CMakeFiles/CMakeDirectoryInformation.cmake"
   "hoplite-squad-leader/CMakeFiles/CMakeDirectoryInformation.cmake"
+  "joystick_control/CMakeFiles/CMakeDirectoryInformation.cmake"
   "hoplite-sim/CMakeFiles/CMakeDirectoryInformation.cmake"
   )
 

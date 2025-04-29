@@ -7,4 +7,5 @@
 subdirs("gtest")
 subdirs("hoplite-soldier")
 subdirs("hoplite-squad-leader")
+subdirs("joystick_control")
 subdirs("hoplite-sim")

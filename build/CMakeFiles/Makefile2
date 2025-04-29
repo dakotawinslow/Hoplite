@@ -473,6 +473,24 @@ hoplite-squad-leader/preinstall:
 .PHONY : hoplite-squad-leader/preinstall
 
 #=============================================================================
+# Directory level rules for directory joystick_control
+
+# Convenience name for "all" pass in the directory.
+joystick_control/all:
+
+.PHONY : joystick_control/all
+
+# Convenience name for "clean" pass in the directory.
+joystick_control/clean:
+
+.PHONY : joystick_control/clean
+
+# Convenience name for "preinstall" pass in the directory.
+joystick_control/preinstall:
+
+.PHONY : joystick_control/preinstall
+
+#=============================================================================
 # Directory level rules for directory hoplite-sim
 
 # Convenience name for "all" pass in the directory.
