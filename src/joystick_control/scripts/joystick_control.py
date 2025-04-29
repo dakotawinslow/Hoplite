@@ -26,8 +26,8 @@ class control_point(object):
     
   def joy_callback(self, msg):
     """ Callback function for the joystick input. It receives the joystick input and updates the control point. """
-    self.x_vel = msg.axes[0] * 500
-    self.y_vel = msg.axes[1] * 500
+    self.x_vel = msg.axes[1] * 500
+    self.y_vel = msg.axes[0] * 500
     self.theta_vel = msg.axes[2] * math.pi
     
   def update_control_point(self):
@@ -72,9 +72,11 @@ if __name__ == '__main__':
   try:
     controller = control_point()
     rate = rospy.Rate(FREQUENCY)
+    direct_control = rospy.get_param("~direct_control")
     while not rospy.is_shutdown():
       controller.update_control_point()
-      controller.publish_marker()
+      if direct_control:
+        controller.publish_twist()
       rate.sleep()
   except rospy.ROSInterruptException:
     pass
