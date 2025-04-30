@@ -15,6 +15,28 @@ This folder documents our process for integrating OptiTrack-based motion capture
 - `MoCAP_Position_streaming.jpg`: Screenshot showing streamed ROS2 topics from MoCAP.
 - `README.md`: This documentation file.
 
+## Setup Instructions
+
+### 1. Launching Motive
+- Open **Motive Tracker 3.2.0** on the MoCAP computer.
+- Load the latest calibration file (e.g., `*.cal`).
+- Ensure that **Continuous Calibration** is enabled.
+- Verify all markers are detected and named (e.g., `soldier_1`, `soldier_2`, `soldier_3`).
+
+### 2. Streaming Data to ROS2
+On the MoCAP computer (Ubuntu 20.04):
+
+```bash
+source /opt/ros/foxy/setup.bash
+ros2 topic list
+```
+
+Then you can see topics such as 
+```bash
+/pose_soldier_0
+```
+
+
 ## Notes
 
 - Make sure the MoCAP machine is connected to the same ROS network.
