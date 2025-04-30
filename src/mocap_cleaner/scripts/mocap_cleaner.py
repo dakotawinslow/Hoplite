@@ -2,7 +2,10 @@
 
 import rospy
 from geometry_msgs.msg import PoseStamped, Pose
+from visualization_msgs.msg import Marker
 import tf.transformations
+
+from matplotlib import colors
 
 class MocapCleanerNode:
     """ Node to clean up the mocap data by removing the first and last frames. """
@@ -18,6 +21,7 @@ class MocapCleanerNode:
         publish_topic = rospy.get_param("~publish_topic", "/UNSPECIFIED_publish_topic")
         # Publisher for the cleaned mocap data
         self.cleaned_mocap_publisher = rospy.Publisher(publish_topic, PoseStamped, queue_size=10)
+        self.color = rospy.get_param("~color", default="red")
 
     def mocap_callback(self, msg):
         
@@ -34,8 +38,23 @@ class MocapCleanerNode:
         msg.pose.orientation.z = quaternion[2]
         msg.pose.orientation.w = quaternion[3]
 
+        marker = Marker()
+        marker.header.frame_id = "base_link"
+        marker.header.stamp = rospy.Time.now()
+        marker.type = Marker.ARROW
+        marker.action = Marker.ADD
+        marker.pose = msg.pose
+        marker.scale.x = 200
+        marker.scale.y = 50
+        marker.scale.z = 50
+        color = colors.to_rgba(self.color)
+        marker.color.r = color[0]
+        marker.color.g = color[1]
+        marker.color.b = color[2]
+        marker.color.a = color[3]
+
         # Publish the cleaned mocap data
-        self.cleaned_mocap_publisher.publish(msg)
+        self.cleaned_mocap_publisher.publish(marker)
         rospy.loginfo("Published cleaned mocap data: %s", msg)
 
 if __name__ == "__main__":
