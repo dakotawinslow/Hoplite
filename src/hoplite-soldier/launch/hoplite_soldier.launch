@@ -14,6 +14,7 @@
     <node name="$(arg host)_mocap_cleaner" pkg="mocap-cleaner" type="mocap_cleaner.py" output="screen">
         <param name="subscribe_topic" value="/vrpn_mocap/#(host)/pose" />
         <param name="publish_topic" value="$(arg host)/_position" />
+    </node>
 
     <!-- Launch the hoplite-soldier node -->
     <node name="$(arg host)" pkg="hoplite-soldier" type="hoplite-soldier.py" output="screen">
