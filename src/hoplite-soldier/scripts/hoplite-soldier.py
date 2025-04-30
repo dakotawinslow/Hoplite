@@ -617,7 +617,7 @@ class HopliteSoldierNode(object):
         self.squad_members = {}
         
         # Get our own ID (from the node name)
-        match = re.search(r'soldier_(\d+)', self.name)
+        match = re.search(r'hoplite(\d+)', self.name)
         if match:
             self.soldier_id = int(match.group(1))
         else:
@@ -712,9 +712,9 @@ class HopliteSoldierNode(object):
             self.squad_members[i] = squad_member
             
             # Subscribe to pose, position, and velocity
-            pose_topic = "/soldier_{0}/_pose".format(i)
-            position_topic = "/soldier_{0}/_position".format(i)
-            vel_topic = "/soldier_{0}/cmd_vel".format(i)
+            pose_topic = "/hoplite{0}/_pose".format(i)
+            position_topic = "/hoplite{0}/_position".format(i)
+            vel_topic = "/hoplite{0}/cmd_vel".format(i)
             
             rospy.Subscriber(pose_topic, PoseStamped, 
                             lambda msg, sid=i: self.on_squad_pose(msg, sid))

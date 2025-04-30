@@ -27,7 +27,7 @@ class HopliteSquadLeaderNode:
         self.soldier_subscribers = []
         self.soldier_publishers = []
         for i in range(self.soldier_count):
-            soldier_name = "soldier_" + str(i)
+            soldier_name = "hoplite" + str(i)
             self.soldier_models.append(SoldierModel())
             self.soldier_subscribers.append(rospy.Subscriber('/' + soldier_name + '/_position', 
                                                              Marker, self.soldier_callback, callback_args=i))
