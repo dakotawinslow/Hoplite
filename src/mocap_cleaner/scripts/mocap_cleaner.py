@@ -38,3 +38,10 @@ class MocapCleanerNode:
         self.cleaned_mocap_publisher.publish(msg)
         rospy.loginfo("Published cleaned mocap data: %s", msg)
 
+if __name__ == "__main__":
+    try:
+        node = MocapCleanerNode()
+        rospy.spin()
+    except rospy.ROSInterruptException:
+        pass
+
