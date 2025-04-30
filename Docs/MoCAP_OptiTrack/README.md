@@ -11,8 +11,8 @@ This folder documents our process for integrating OptiTrack-based motion capture
 
 ## Files
 
-- `limobot_mocap_positions.png`: Screenshot of 3 LIMObots tracked in Motive.
-- `ros2_topic_list.png`: Screenshot showing streamed ROS2 topics from MoCAP.
+- `LIMOBOT_Swarm_Motive.jpg`: Screenshot of 3 LIMObots tracked in Motive.
+- `MoCAP_Position_streaming.jpg`: Screenshot showing streamed ROS2 topics from MoCAP.
 - `README.md`: This documentation file.
 
 ## Notes
