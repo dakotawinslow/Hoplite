@@ -11,7 +11,7 @@
     </node>
 
     <!-- Launch the data cleaning node -->
-    <node name="$(arg host)_mocap_cleaner" pkg="mocap-cleaner" type="mocap_cleaner.py" output="screen">
+    <node name="$(arg host)_mocap_cleaner" pkg="mocap-cleaner" type="mocap-cleaner.py" output="screen">
         <param name="subscribe_topic" value="/vrpn_mocap/#(host)/pose" />
         <param name="publish_topic" value="$(arg host)/_position" />
     </node>
