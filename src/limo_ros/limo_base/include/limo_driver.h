@@ -80,6 +80,7 @@ private:
 
     std::string odom_frame_;
     std::string base_frame_;
+    std::string cmd_vel_topic_;
     bool pub_odom_tf_ = false;
     bool use_mcnamu_ = false;
 

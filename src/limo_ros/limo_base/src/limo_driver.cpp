@@ -42,11 +42,12 @@ LimoDriver::LimoDriver()  {
     private_nh.param<std::string>("base_frame", base_frame_, std::string("base_link"));
     private_nh.param<bool>("pub_odom_tf", pub_odom_tf_, false);
     private_nh.param<bool>("use_mcnamu", use_mcnamu_, false);
+    private_nh.param<std::string>("cmd_vel_topic", cmd_vel_topic_, std::string("/cmd_vel"));
 
     odom_publisher_ = nh.advertise<nav_msgs::Odometry>("/odom", 50, true);
     status_publisher_ = nh.advertise<limo_base::LimoStatus>("/limo_status", 10, true);
     imu_publisher_ = nh.advertise<sensor_msgs::Imu>("/imu", 10, true);
-    motion_cmd_sub_ = nh.subscribe<geometry_msgs::Twist>("/cmd_vel", 5, &LimoDriver::twistCmdCallback, this);
+    motion_cmd_sub_ = nh.subscribe<geometry_msgs::Twist>(cmd_vel_topic_, 5, &LimoDriver::twistCmdCallback, this);
 
     // connect to the serial port
     if (port_name.find("tty") != port_name.npos){

@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+
+<launch>
+    <!-- Use sim time -->
+    <param name="use_sim_time" value="False" />
+    <param name="soldier_count" value="3" />
+    <!-- Start the clock -->
+    <node name="clock" pkg="hoplite-sim" type="sim_clock.py" output="screen">
+        <param name="period" value="0.01" />
+    </node>
+
+    <!-- Launch the hoplite-soldier node -->
+    <node name="$(hostname)" pkg="hoplite-soldier" type="hoplite-soldier.py" output="screen">
+        <param name="robot_radius" value="200.0" />
+        <param name="neighbor_dist" value="1500.0" />
+        <param name="time_horizon" value="3.0" />
+        <param name="use_collision_avoidance" value="true" />
+        <param name="use_formation_control" value="true" />
+        <param name="repulsive_coeff" value="5000000.0" />
+        <param name="distance_power" value="2.0" />
+    </node>
+
+    <!-- Launch the LIMO node -->
+    <include file="$(find limo_base)/launch/limo_base.launch" >
+        <arg name="port_name" value="ttyTHS1" />
+        <arg name="odom_frame" value="odom" />
+        <arg name="base_frame" value="base_link" />
+        <arg name="use_mcnamu" value="true" />
+        <arg name="pub_odom_tf" value="false" />
+        <arg name="cmd_vel_topic" value="$(hostname)/cmd_vel" />
+    </include>
+
+    <!-- Launch RViz to visualize the markers -->
+    <node name="rviz" pkg="rviz" type="rviz" args="--display-config $(find hoplite-sim)/rviz/vLIMO_display.rviz" output="screen">
+        <!-- Ensure you have a proper RViz configuration file -->
+    </node>
+</launch>
