@@ -267,10 +267,6 @@ class HopliteKinematicModel(object):
 
         new_dir = angle_to_goal
 
-        # correct for robot facing
-        new_dir -= self.theta
-        new_dir = new_dir % (2 * math.pi)
-
         # set vx, vy
         self.vx = new_speed * math.cos(new_dir)
         self.vy = new_speed * math.sin(new_dir)
@@ -302,10 +298,15 @@ class HopliteKinematicModel(object):
         self.y += self.vy * dt
         self.theta = (self.theta + self.omega * dt) % (2 * math.pi)
 
+
+        # correct for robot facing
+        self.local_vx = self.vx * math.cos(self.theta) + self.vy * math.sin(self.theta)
+        self.local_vy = -self.vx * math.sin(self.theta) + self.vy * math.cos(self.theta) 
+
         # build Twist
         twist = Twist()
-        twist.linear.x = self.vx
-        twist.linear.y = self.vy
+        twist.linear.x = self.local_vx
+        twist.linear.y = self.local_vy
         twist.angular.z = self.omega
         return twist
 
