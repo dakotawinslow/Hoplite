@@ -193,7 +193,7 @@ class HopliteKinematicModel(object):
         self.max_v = 500.0
         self.max_omega = math.pi 
         self.linear_acc = 1000.0
-        self.angular_acc = math.pi
+        self.angular_acc = 2 * math.pi 
 
         # target
         self.tx = 0.0
