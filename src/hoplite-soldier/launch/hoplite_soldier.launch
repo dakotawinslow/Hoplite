@@ -36,5 +36,6 @@
         <arg name="use_mcnamu" value="true" />
         <arg name="pub_odom_tf" value="false" />
         <arg name="cmd_vel_topic" value="$(arg host)/cmd_vel" />
+        <arg name="host" value="$(arg host)" />
     </include>
 </launch>
