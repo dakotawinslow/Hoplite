@@ -31,14 +31,14 @@ class MocapCleanerNode:
         msg.pose.position.z = 0.0
 
         # remove all rotation except yaw
-        quaternion = [msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w]
-        euler = tf.transformations.euler_from_quaternion(quaternion)
-        euler = (0.0, 0.0, -euler[2])
-        quaternion = tf.transformations.quaternion_from_euler(*euler)
-        msg.pose.orientation.x = quaternion[0]
-        msg.pose.orientation.y = quaternion[1]
-        msg.pose.orientation.z = quaternion[2]
-        msg.pose.orientation.w = quaternion[3]
+        # quaternion = [msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w]
+        # euler = tf.transformations.euler_from_quaternion(quaternion)
+        # euler = (0.0, 0.0, euler[2])
+        # quaternion = tf.transformations.quaternion_from_euler(*euler)
+        # msg.pose.orientation.x = quaternion[0]
+        # msg.pose.orientation.y = quaternion[1]
+        # msg.pose.orientation.z = quaternion[2]
+        # msg.pose.orientation.w = quaternion[3]
 
         marker = Marker()
         marker.header.frame_id = "base_link"
