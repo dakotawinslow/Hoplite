@@ -35,9 +35,9 @@ class MocapCleanerNode:
         # euler = tf.transformations.euler_from_quaternion(quaternion)
         # euler = (0.0, 0.0, -euler[1])
         # quaternion = tf.transformations.quaternion_from_euler(*euler)
-        msg.pose.orientation.x = 0 #quaternion[0]
-        msg.pose.orientation.y = 0 #quaternion[1]
-        msg.pose.orientation.z = -quaternion[2]
+        msg.pose.orientation.x = quaternion[0]
+        msg.pose.orientation.y = quaternion[1]
+        msg.pose.orientation.z = quaternion[2]
         msg.pose.orientation.w = quaternion[3]
 
         marker = Marker()
