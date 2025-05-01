@@ -256,7 +256,7 @@ class HopliteKinematicModel(object):
         ramp_down = 0.5 * (v_norm ** 2) / self.linear_acc
 
         # decide new speed magnitude
-        if dist < 1.0:
+        if dist < 5.0:
             new_speed = 0.0
         elif dist < ramp_down:
             new_speed = v_norm - self.linear_acc * dt
