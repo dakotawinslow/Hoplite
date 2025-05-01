@@ -20,7 +20,7 @@ class MocapCleanerNode:
         
         publish_topic = rospy.get_param("~publish_topic", "/UNSPECIFIED_publish_topic")
         # Publisher for the cleaned mocap data
-        self.cleaned_mocap_publisher = rospy.Publisher(publish_topic, PoseStamped, queue_size=10)
+        self.cleaned_mocap_publisher = rospy.Publisher(publish_topic, Marker, queue_size=10)
         self.color = rospy.get_param("~color", default="red")
 
     def mocap_callback(self, msg):
