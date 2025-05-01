@@ -27,7 +27,7 @@ class MocapCleanerNode:
         
         # remove z coordinate
         msg.pose.position.x = msg.pose.position.x * 1000.
-        msg.pose.position.y = msg.pose.position.z * 1000.
+        msg.pose.position.y = msg.pose.position.z * -1000.
         msg.pose.position.z = 0.0
 
         # remove all rotation except yaw
