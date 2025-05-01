@@ -192,7 +192,7 @@ class HopliteKinematicModel(object):
         # limits & accelerations
         self.max_v = 500.0
         self.max_omega = math.pi / 2.0
-        self.linear_acc = 2500.0
+        self.linear_acc = 1000.0
         self.angular_acc = math.pi / 4.0
 
         # target
@@ -256,7 +256,7 @@ class HopliteKinematicModel(object):
         ramp_down = 0.5 * (v_norm ** 2) / self.linear_acc
 
         # decide new speed magnitude
-        if dist < 5.0:
+        if dist < 10.0:
             new_speed = 0.0
         elif dist < ramp_down:
             new_speed = v_norm - self.linear_acc * dt
