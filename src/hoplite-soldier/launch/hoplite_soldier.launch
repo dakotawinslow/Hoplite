@@ -25,7 +25,7 @@
         <param name="use_collision_avoidance" value="true" />
         <param name="use_formation_control" value="true" />
         <param name="repulsive_coeff" value="5000000.0" />
-        <param name="distance_power" value="2.0" />
+        <param name="distance_power" value="2.5" />
     </node>
 
     <!-- Launch the LIMO node -->
