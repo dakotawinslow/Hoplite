@@ -11,11 +11,11 @@
     </node>
 
     <!-- Launch the data cleaning node -->
-    <node name="$(arg host)_mocap_cleaner" pkg="mocap_cleaner" type="mocap_cleaner.py" output="screen">
+    <!-- <node name="$(arg host)_mocap_cleaner" pkg="mocap_cleaner" type="mocap_cleaner.py" output="screen">
         <param name="subscribe_topic" value="/vrpn_mocap/$(arg host)/pose" />
         <param name="publish_topic" value="$(arg host)/_position" />
         <param name="color" value="red" />
-    </node>
+    </node> -->
 
     <!-- Launch the hoplite-soldier node -->
     <node name="$(arg host)" pkg="hoplite-soldier" type="hoplite-soldier.py" output="screen">

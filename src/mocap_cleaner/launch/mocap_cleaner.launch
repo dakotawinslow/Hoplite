@@ -1,0 +1,6 @@
+<launch>
+    <node name="mocap_cleaner" pkg="mocap_cleaner" type="mocap_cleaner.py" output="screen">
+        <param name="subscribe_topic" value="/vrpn_mocap/hoplite0/pose" />
+        <param name="publish_topic" value="/hoplite0/_position" />
+    </node>
+</launch>
