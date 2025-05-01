@@ -267,6 +267,10 @@ class HopliteKinematicModel(object):
 
         new_dir = angle_to_goal
 
+        # correct for robot facing
+        new_dir -= self.theta
+        new_dir = new_dir % (2 * math.pi)
+
         # set vx, vy
         self.vx = new_speed * math.cos(new_dir)
         self.vy = new_speed * math.sin(new_dir)
@@ -322,6 +326,7 @@ class HopliteKinematicModel(object):
         p.position.y = self.ty
         p.orientation = Quaternion(*quat)
         return p
+
 
 # -----------------------------------------------------------------------------
 # Squad Member Tracking
