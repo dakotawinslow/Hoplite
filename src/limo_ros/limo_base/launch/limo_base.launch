@@ -9,7 +9,7 @@
     <arg name="pub_odom_tf" default="false" />
     <arg name="cmd_vel_topic" default="cmd_vel" />
 
-    <node name="limo_base_node" pkg="limo_base" type="limo_base_node" output="screen" >
+    <node name="$(arg host)_limo_base_node" pkg="limo_base" type="limo_base_node" output="screen" >
         <param name="port_name" value="$(arg port_name)" />
         <param name="odom_frame" value="$(arg odom_frame)" />
         <param name="base_frame" value="$(arg base_frame)" />
