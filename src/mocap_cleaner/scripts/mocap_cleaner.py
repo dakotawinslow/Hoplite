@@ -27,6 +27,8 @@ class MocapCleanerNode:
         
         # remove z coordinate
         msg.pose.position.z = 0.0
+        msg.pose.position.x = msg.pose.position.x * 1000.
+        msg.pose.position.y = msg.pose.position.y * 1000.
 
         # remove all rotation except yaw
         quaternion = [msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w]
