@@ -718,6 +718,7 @@ class HopliteSoldierNode(object):
             
             # Subscribe to pose, position, and velocity
             pose_topic = "/hoplite{0}/_pose".format(i)
+            pose_topic = "/move_base_simple/goal".format(i)
             position_topic = "/hoplite{0}/_position".format(i)
             vel_topic = "/hoplite{0}/cmd_vel".format(i)
             
