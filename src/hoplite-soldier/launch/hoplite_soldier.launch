@@ -3,7 +3,7 @@
 <launch>
     <!-- Use sim time -->
     <param name="use_sim_time" value="False" />
-    <param name="soldier_count" value="1" />
+    <param name="soldier_count" value="3" />
     <arg name="host" default="UNSPECIFIED_HOSTNAME" />
     <!-- Start the clock -->
     <node name="clock" pkg="hoplite-sim" type="sim_clock.py" output="screen">

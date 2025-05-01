@@ -33,8 +33,8 @@ class MocapCleanerNode:
 
         # remove all rotation except yaw
         quaternion = [msg.pose.orientation.x, msg.pose.orientation.z, msg.pose.orientation.y, msg.pose.orientation.w]
-        rotation = quaternion_about_axis(math.pi, (0, 0, 1))
-        quaternion = quaternion_multiply(quaternion, rotation)
+        # rotation = quaternion_about_axis(math.pi, (0, 0, 1))
+        # quaternion = quaternion_multiply(quaternion, rotation)
         msg.pose.orientation.x = quaternion[0]
         msg.pose.orientation.y = quaternion[1]
         msg.pose.orientation.z = quaternion[2]
