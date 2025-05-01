@@ -20,7 +20,7 @@ class HopliteSquadLeaderNode:
         self.name = rospy.get_name().split("/")[-1]
 
         # Don't forget that soldier_count is a GLOBAL param
-        self.soldier_count = rospy.get_param("soldier_count", default=2)
+        self.soldier_count = rospy.get_param("soldier_count", default=1)
 
         # make soldier models
         self.soldier_models = []

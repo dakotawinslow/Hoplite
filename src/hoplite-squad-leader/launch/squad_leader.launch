@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+
+<launch>
+    <!-- Launch the data cleaning node -->
+    <node name="hoplite_squad_leader" pkg="hoplite-squad-leader" type="hoplite-squad-leader.py" output="screen">
+        <param name="soldier_count" value="1" />
+    </node>
+</launch>

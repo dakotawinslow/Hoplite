@@ -690,9 +690,9 @@ class HopliteSoldierNode(object):
             
         # Continue with initialization after receiving position or timeout
         # subscribers for our own information
-        # rospy.Subscriber("/{}/_pose".format(self.name),
-        #                  PoseStamped, self.on_target)
-        rospy.Subscriber("/move_base_simple/goal", PoseStamped, self.on_target)
+        rospy.Subscriber("/{}/_pose".format(self.name),
+                         PoseStamped, self.on_target)
+        # rospy.Subscriber("/move_base_simple/goal", PoseStamped, self.on_target)
         
         # Setup squad tracking
         self.setup_squad_tracking()
