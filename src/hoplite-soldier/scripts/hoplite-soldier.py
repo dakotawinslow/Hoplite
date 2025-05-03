@@ -736,7 +736,7 @@ class HopliteSoldierNode(object):
         """Setup subscriber for tracking own actual position."""
         # We now subscribe to _position in the constructor, so this method can be simplified
         # but we keep the _pose subscription for backward compatibility
-        topic = "/{}/_position".format(self.name)
+        topic = "/{}/_pose".format(self.name)
         rospy.Subscriber(topic, PoseStamped, self.on_target)
         rospy.loginfo("Monitoring own pose from %s", topic)
 
