@@ -1,8 +1,15 @@
 <?xml version="1.0"?>
 
 <launch>
-    <!-- Launch the data cleaning node -->
+    <!-- Launch the leader node -->
     <node name="hoplite_squad_leader" pkg="hoplite-squad-leader" type="hoplite-squad-leader.py" output="screen">
         <param name="soldier_count" value="3" />
+    </node>
+
+    <!-- Launch the joystick nodes -->
+    <node name="joy_node" pkg="joy" type="joy_node" output="screen">
+        <param name="dev" value="/dev/input/js0" />
+    </node>
+    <node name="joystick_interpreter" pkg="joystick_control" type="joystick_control.py" output="screen">
     </node>
 </launch>

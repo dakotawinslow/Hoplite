@@ -8,8 +8,6 @@ from tf.transformations import quaternion_from_euler
 from matplotlib import colors
 import math
 
-FREQUENCY = 10.0 # Hz
-
 class control_point(object):
   def __init__(self):
     rospy.init_node('joystick_controller', anonymous=False)
@@ -23,19 +21,27 @@ class control_point(object):
     self.joy_subscriber = rospy.Subscriber('/joy', Joy, self.joy_callback)
     self.marker_publisher = rospy.Publisher('/joystick_controller/marker', Marker, queue_size=10)
     self.twist_publisher = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
+
+    self.last_update_time = rospy.Time.now()
     
   def joy_callback(self, msg):
     """ Callback function for the joystick input. It receives the joystick input and updates the control point. """
-    self.x_vel = msg.axes[1] * 500
-    self.y_vel = msg.axes[0] * 500
-    self.theta_vel = msg.axes[2] * math.pi
+    self.x_vel = msg.axes[0] * -1000
+    self.y_vel = msg.axes[1] * 1000
+    self.theta_vel = msg.axes[2] * 2 * math.pi
+    self.update_control_point()
     
   def update_control_point(self):
     """ Update the control point based on the joystick input. """
-    self.x += self.x_vel * (1.0 / FREQUENCY)
-    self.y += self.y_vel * (1.0 / FREQUENCY)
-    self.theta += self.theta_vel * (1.0 / FREQUENCY)
+    delta_time = rospy.Time.now() - self.last_update_time
+    self.last_update_time = rospy.Time.now()
+    if delta_time.to_sec() == 0:
+      return
+    self.x += self.x_vel * delta_time.to_sec()
+    self.y += self.y_vel * delta_time.to_sec()
+    self.theta += self.theta_vel * delta_time.to_sec()
     self.theta = self.theta % (2 * math.pi)
+    self.publish_marker()
 
   def publish_marker(self):
     marker = Marker()
@@ -71,12 +77,7 @@ class control_point(object):
 if __name__ == '__main__':
   try:
     controller = control_point()
-    rate = rospy.Rate(FREQUENCY)
-    direct_control = rospy.get_param("~direct_control")
-    while not rospy.is_shutdown():
-      controller.update_control_point()
-      if direct_control:
-        controller.publish_twist()
-      rate.sleep()
+    rospy.spin()
+    # direct_control = rospy.get_param("~direct_control")
   except rospy.ROSInterruptException:
     pass

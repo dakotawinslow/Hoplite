@@ -5,6 +5,7 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /0_position1/Status1
+        - /Control_Point1
       Splitter Ratio: 0.5449591279029846
     Tree Height: 603
   - Class: rviz/Selection
@@ -56,7 +57,7 @@ Visualization Manager:
       Marker Topic: /hoplite0/_position
       Name: 0_position
       Namespaces:
-        "": true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
@@ -64,7 +65,7 @@ Visualization Manager:
       Marker Topic: /hoplite0/target
       Name: 0_target
       Namespaces:
-        "": true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
@@ -72,7 +73,7 @@ Visualization Manager:
       Marker Topic: /hoplite0/robot_radius
       Name: 0_radius
       Namespaces:
-        "": true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
@@ -80,7 +81,7 @@ Visualization Manager:
       Marker Topic: /hoplite1/_position
       Name: 1_position
       Namespaces:
-        "": true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
@@ -88,7 +89,7 @@ Visualization Manager:
       Marker Topic: /hoplite1/target
       Name: 1_target
       Namespaces:
-        "": true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
@@ -96,7 +97,7 @@ Visualization Manager:
       Marker Topic: /hoplite1/robot_radius
       Name: 1_radius
       Namespaces:
-        "": true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
@@ -104,7 +105,7 @@ Visualization Manager:
       Marker Topic: /hoplite2/_position
       Name: 2_position
       Namespaces:
-        "": true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
@@ -112,7 +113,7 @@ Visualization Manager:
       Marker Topic: /hoplite2/target
       Name: 2_target
       Namespaces:
-        "": true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
@@ -120,7 +121,7 @@ Visualization Manager:
       Marker Topic: /hoplite2/robot_radius
       Name: 2_radius
       Namespaces:
-        "": true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
@@ -128,7 +129,7 @@ Visualization Manager:
       Marker Topic: /squad_goal
       Name: Squad Goals
       Namespaces:
-        "": true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/Axes
@@ -138,44 +139,12 @@ Visualization Manager:
       Radius: 7
       Reference Frame: <Fixed Frame>
       Value: true
-    - Class: rviz/MarkerArray
+    - Class: rviz/Marker
       Enabled: true
-      Marker Topic: /soldier_0/orca/avoidance_vectors
-      Name: 0_viz
+      Marker Topic: /joystick_controller/marker
+      Name: Control_Point
       Namespaces:
-        {}
-      Queue Size: 100
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /soldier_0/orca/collision_points
-      Name: 0_viz
-      Namespaces:
-        {}
-      Queue Size: 100
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /soldier_0/orca/neighbor_info
-      Name: 0_viz
-      Namespaces:
-        {}
-      Queue Size: 100
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /soldier_0/orca/velocity_obstacles
-      Name: 0_viz
-      Namespaces:
-        {}
-      Queue Size: 100
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /soldier_0/orca/velocity_vectors
-      Name: 0_viz
-      Namespaces:
-        {}
+        "": true
       Queue Size: 100
       Value: true
   Enabled: true
@@ -215,7 +184,7 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Scale: 0.17520596086978912
+      Scale: 0.2322767674922943
       Target Frame: <Fixed Frame>
       Value: TopDownOrtho (rviz)
       X: -117.69744110107422
