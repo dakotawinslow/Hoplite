@@ -8,6 +8,8 @@ import math
 
 from matplotlib import colors
 
+FREQUENCY = 10
+
 class MocapCleanerNode:
     """ Node to clean up the mocap data by removing the first and last frames. """
     def __init__(self):
@@ -23,6 +25,8 @@ class MocapCleanerNode:
         # Publisher for the cleaned mocap data
         self.cleaned_mocap_publisher = rospy.Publisher(publish_topic, Marker, queue_size=10)
         self.color = rospy.get_param("~color", default="red")
+
+        self.marker = Marker()
 
     def mocap_callback(self, msg):
         
@@ -55,14 +59,18 @@ class MocapCleanerNode:
         marker.color.b = color[2]
         marker.color.a = color[3]
 
+        self.marker = marker
+
         # Publish the cleaned mocap data
-        self.cleaned_mocap_publisher.publish(marker)
+        # self.cleaned_mocap_publisher.publish(marker)
         # rospy.loginfo("Published cleaned mocap data: %s", msg)
 
 if __name__ == "__main__":
     try:
         node = MocapCleanerNode()
-        rospy.spin()
+        while not rospy.is_shutdown():
+            node.cleaned_mocap_publisher.publish(node.marker)
+            rospy.sleep(1.0 / FREQUENCY)
     except rospy.ROSInterruptException:
         pass
 
