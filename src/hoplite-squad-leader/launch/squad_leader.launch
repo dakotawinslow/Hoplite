@@ -6,10 +6,7 @@
         <param name="soldier_count" value="3" />
     </node>
 
-    <!-- Launch the joystick nodes -->
-    <node name="joy_node" pkg="joy" type="joy_node" output="screen">
-        <param name="dev" value="/dev/input/js0" />
-    </node>
+    <!-- Launch the joystick node -->
     <node name="joystick_interpreter" pkg="joystick_control" type="joystick_control.py" output="screen">
     </node>
 </launch>

@@ -35,7 +35,7 @@ class HopliteSquadLeaderNode:
                                                            PoseStamped, queue_size=10))
             
         # Subscriber to the control pose
-        self.pose_subscriber = rospy.Subscriber('/joystick_controller/marker', PoseStamped, self.issue_orders)
+        self.pose_subscriber = rospy.Subscriber('/joystick_controller/marker', Marker, self.issue_orders)
         # Publish the current goal
         self.goal_publisher = rospy.Publisher('/squad_goal', Marker, queue_size=10)
         
