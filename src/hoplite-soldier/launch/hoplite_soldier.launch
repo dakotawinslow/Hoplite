@@ -24,7 +24,7 @@
         <param name="time_horizon" value="3.0" />
         <param name="use_collision_avoidance" value="true" />
         <param name="use_formation_control" value="true" />
-        <param name="repulsive_coeff" value="10000000.0" />
+        <param name="repulsive_coeff" value="1000000.0" />
         <param name="distance_power" value="3" />
     </node>
 
