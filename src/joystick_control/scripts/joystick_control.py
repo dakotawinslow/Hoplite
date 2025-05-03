@@ -8,6 +8,8 @@ from tf.transformations import quaternion_from_euler
 from matplotlib import colors
 import math
 
+FREQUENCY = 10
+
 class control_point(object):
   def __init__(self):
     rospy.init_node('joystick_controller', anonymous=False)
@@ -41,7 +43,6 @@ class control_point(object):
     self.y += self.y_vel * delta_time.to_sec()
     self.theta += self.theta_vel * delta_time.to_sec()
     self.theta = self.theta % (2 * math.pi)
-    self.publish_marker()
 
   def publish_marker(self):
     marker = Marker()
@@ -77,7 +78,10 @@ class control_point(object):
 if __name__ == '__main__':
   try:
     controller = control_point()
-    rospy.spin()
+    while not rospy.is_shutdown():
+      controller.publish_marker()
+      controller.publish_twist()
+      rospy.sleep(1.0 / FREQUENCY)
     # direct_control = rospy.get_param("~direct_control")
   except rospy.ROSInterruptException:
     pass

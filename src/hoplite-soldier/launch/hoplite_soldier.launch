@@ -6,9 +6,9 @@
     <param name="soldier_count" value="3" />
     <arg name="host" default="UNSPECIFIED_HOSTNAME" />
     <!-- Start the clock -->
-    <node name="clock" pkg="hoplite-sim" type="sim_clock.py" output="screen">
+    <!-- <node name="clock" pkg="hoplite-sim" type="sim_clock.py" output="screen">
         <param name="period" value="0.01" />
-    </node>
+    </node> -->
 
     <!-- Launch the data cleaning node -->
     <node name="$(arg host)_mocap_cleaner" pkg="mocap_cleaner" type="mocap_cleaner.py" output="screen">
