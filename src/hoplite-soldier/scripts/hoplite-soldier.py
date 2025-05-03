@@ -294,9 +294,9 @@ class HopliteKinematicModel(object):
         self.omega = w_new * np.sign(th_err)
 
         # --- integrate pose ---
-        self.x += self.vx * dt
-        self.y += self.vy * dt
-        self.theta = (self.theta + self.omega * dt) % (2 * math.pi)
+        # self.x += self.vx * dt
+        # self.y += self.vy * dt
+        # self.theta = (self.theta + self.omega * dt) % (2 * math.pi)
 
 
         # correct for robot facing
