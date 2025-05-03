@@ -736,26 +736,13 @@ class HopliteSoldierNode(object):
         """Setup subscriber for tracking own actual position."""
         # We now subscribe to _position in the constructor, so this method can be simplified
         # but we keep the _pose subscription for backward compatibility
-        topic = "/{}/_pose".format(self.name)
-        rospy.Subscriber(topic, PoseStamped, self.on_own_pose)
+        topic = "/{}/_position".format(self.name)
+        rospy.Subscriber(topic, PoseStamped, self.on_target)
         rospy.loginfo("Monitoring own pose from %s", topic)
 
-    def on_own_pose(self, msg):
+    def on_own_target(self, msg):
         """Callback when our own actual position is updated."""
-        # Extract position and orientation from the message
-        x = msg.pose.position.x
-        y = msg.pose.position.y
-        _, _, theta = tf.transformations.euler_from_quaternion(
-            [msg.pose.orientation.x, msg.pose.orientation.y,
-             msg.pose.orientation.z, msg.pose.orientation.w]
-        )
-        
-        # Update the internal model with the actual position
-        self.model.x = x
-        self.model.y = y
-        self.model.theta = theta
-        
-        # We should also update our target if we're using the same topic
+
         # for both target setting and position updating
         self.model.set_target(msg.pose)
         
@@ -764,9 +751,7 @@ class HopliteSoldierNode(object):
         marker = MarkerFactory.make_arrow(
             self.model.target_pose(), rgba, scale=(200, 50, 50))
         self.tgt_pub.publish(marker)
-        
-        # Log the update at debug level
-        rospy.logdebug("Updated own position: x=%.1f y=%.1f θ=%.2f", x, y, theta)
+    
 
     def on_position_update(self, marker_msg):
         """Callback when our own actual position is updated via Marker."""
