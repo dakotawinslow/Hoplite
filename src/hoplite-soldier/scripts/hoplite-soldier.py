@@ -158,6 +158,15 @@ class PotentialFieldCollisionAvoidance(object):
                 scale_factor = self.max_velocity / velocity_magnitude
                 adjusted_vel[0] *= scale_factor
                 adjusted_vel[1] *= scale_factor
+
+        # Scale the adjusted velocity to the same magnitude as the desired velocity
+        desired_velocity_magnitude = math.hypot(vel[0], vel[1])
+        if desired_velocity_magnitude > 0:
+            current_velocity_magnitude = math.hypot(adjusted_vel[0], adjusted_vel[1])
+            if current_velocity_magnitude > 0:
+                scale_factor = desired_velocity_magnitude / current_velocity_magnitude
+                adjusted_vel[0] *= scale_factor
+                adjusted_vel[1] *= scale_factor
         
         # Store the final adjusted velocity for visualization
         self.viz_data['adjusted_velocity'] = tuple(adjusted_vel)
@@ -184,6 +193,11 @@ class HopliteKinematicModel(object):
         self.y = 0.0
         self.theta = 0.0
 
+        # last pose
+        self.last_x = 0.0
+        self.last_y = 0.0
+        self.last_theta = 0.0
+
         # velocities
         self.vx = 0.0
         self.vy = 0.0
@@ -202,6 +216,17 @@ class HopliteKinematicModel(object):
         
         # Initialize PotentialField
         self.potential_field = None
+
+        # PD controller parameters
+        self.linear_kp = 1.0  # Proportional gain for linear velocity
+        self.linear_kd = 0.1  # Derivative gain for linear velocity
+        self.angular_kp = 1.0  # Proportional gain for angular velocity
+        self.angular_kd = 0.1  # Derivative gain for angular velocity
+
+        # Deadzones
+        self.dist_deadzone = 15.0  # mm
+        self.angle_deadzone = 0.1  # radians
+
         
     def set_collision_avoidance(self, robot_radius, neighbor_dist, time_horizon):
         """Set up the collision avoidance system with the given parameters."""
@@ -246,58 +271,97 @@ class HopliteKinematicModel(object):
         # --- linear velocity control ---
         # vector to target
         ex, ey = self.tx - self.x, self.ty - self.y
+        last_ex, last_ey = self.last_x - self.x, self.last_y - self.y
+        delta_ex, delta_ey = ex - last_ex, ey - last_ey
         dist = math.hypot(ex, ey)
+        delta_error_mag = math.hypot(delta_ex, delta_ey)
+
         angle_to_goal = math.atan2(ey, ex)
 
         v_norm = math.hypot(self.vx, self.vy)
         v_angle = math.atan2(self.vy, self.vx) if v_norm > 0 else angle_to_goal
 
+        #  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        # Depricated ramping control system, replaced with PD controller
+
         # ramp‐down distance
-        ramp_down = 0.5 * (v_norm ** 2) / self.linear_acc
+        # ramp_down = 0.5 * (v_norm ** 2) / self.linear_acc
 
-        # decide new speed magnitude
-        if dist < 10.0:
-            new_speed = 0.0
-        elif dist < ramp_down:
-            new_speed = v_norm - self.linear_acc * dt
-        elif v_norm < self.max_v:
-            new_speed = v_norm + self.linear_acc * dt
-        else:
-            new_speed = self.max_v
+        # # decide new speed magnitude
+        # if dist < 10.0:
+        #     new_speed = 0.0
+        # elif dist < ramp_down:
+        #     new_speed = v_norm - self.linear_acc * dt
+        # elif v_norm < self.max_v:
+        #     new_speed = v_norm + self.linear_acc * dt
+        # else:
+        #     new_speed = self.max_v
 
-        new_dir = angle_to_goal
+        # new_dir = angle_to_goal
 
         # set vx, vy
-        self.vx = new_speed * math.cos(new_dir)
-        self.vy = new_speed * math.sin(new_dir)
+        # self.vx = new_speed * math.cos(new_dir)
+        # self.vy = new_speed * math.sin(new_dir)
         
-        if self.potential_field and neighbors:
-            pos = (self.x, self.y)
-            vel = (self.vx, self.vy)
-            adjusted_vel = self.potential_field.compute_velocity_adjustment(pos, vel, neighbors)
-            self.vx, self.vy = adjusted_vel
+        # if self.potential_field and neighbors:
+        #     pos = (self.x, self.y)
+        #     vel = (self.vx, self.vy)
+        #     adjusted_vel = self.potential_field.compute_velocity_adjustment(pos, vel, neighbors)
+        #     self.vx, self.vy = adjusted_vel
 
-        # --- angular velocity control ---
-        th_err = self.angle_error()
-        w = abs(self.omega)
-        ang_ramp = 0.5 * (w ** 2) / self.angular_acc
+        # # --- angular velocity control ---
+        # th_err = self.angle_error()
+        # w = abs(self.omega)
+        # ang_ramp = 0.5 * (w ** 2) / self.angular_acc
 
-        if abs(th_err) < 0.01:
-            w_new = 0.0
-        elif abs(th_err) < ang_ramp:
-            w_new = w - self.angular_acc * dt
-        elif w < self.max_omega:
-            w_new = w + self.angular_acc * dt
-        else:
-            w_new = self.max_omega
+        # if abs(th_err) < 0.01:
+        #     w_new = 0.0
+        # elif abs(th_err) < ang_ramp:
+        #     w_new = w - self.angular_acc * dt
+        # elif w < self.max_omega:
+        #     w_new = w + self.angular_acc * dt
+        # else:
+        #     w_new = self.max_omega
 
-        self.omega = w_new * np.sign(th_err)
+        # self.omega = w_new * np.sign(th_err)
 
         # --- integrate pose ---
         # self.x += self.vx * dt
         # self.y += self.vy * dt
         # self.theta = (self.theta + self.omega * dt) % (2 * math.pi)
 
+        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        # PD controller for linear velocity
+        vel_mag = self.kp * dist + self.kd * delta_error_mag
+
+        # Limit the velocity magnitude to max_v
+        if vel_mag > self.max_v:
+            vel_mag = self.max_v
+
+        # Deadzone
+        if dist < self.dist_deadzone:
+            vel_mag = 0.0
+
+        # do collision avoidance if enabled
+        if self.potential_field and neighbors:
+            pos = (self.x, self.y)
+            vel = (vel_mag * math.cos(angle_to_goal), vel_mag * math.sin(angle_to_goal))
+            adjusted_vel = self.potential_field.compute_velocity_adjustment(pos, vel, neighbors)
+            self.vx, self.vy = adjusted_vel
+        else:
+            self.vx = vel_mag * math.cos(angle_to_goal)
+            self.vy = vel_mag * math.sin(angle_to_goal)
+
+        # PD controller for angular velocity
+        th_err = self.angle_error()
+        ang_vel = self.angular_kp * th_err + self.angular_kd * (th_err - (self.last_theta - self.theta)) / dt
+        # Limit the angular velocity to max_omega
+        if abs(ang_vel) > self.max_omega:
+            ang_vel = self.max_omega * np.sign(ang_vel)
+        # Deadzone 
+        if abs(th_err) < self.angle_deadzone:
+            ang_vel = 0.0
+        self.omega = ang_vel
 
         # correct for robot facing
         self.local_vx = self.vx * math.cos(self.theta) + self.vy * math.sin(self.theta)
@@ -719,12 +783,9 @@ class HopliteSoldierNode(object):
             self.squad_members[i] = squad_member
             
             # Subscribe to pose, position, and velocity
-            pose_topic = "/hoplite{0}/_pose".format(i)
             position_topic = "/hoplite{0}/_position".format(i)
             vel_topic = "/hoplite{0}/cmd_vel".format(i)
             
-            rospy.Subscriber(pose_topic, PoseStamped, 
-                            lambda msg, sid=i: self.on_squad_pose(msg, sid))
             rospy.Subscriber(position_topic, Marker, 
                             lambda msg, sid=i: self.on_squad_position(msg, sid))
             rospy.Subscriber(vel_topic, Twist, 
@@ -755,6 +816,9 @@ class HopliteSoldierNode(object):
 
     def on_position_update(self, marker_msg):
         """Callback when our own actual position is updated via Marker."""
+        # Move the current position to last position
+        self.model.last_x = self.model.x
+        self.model.last_y = self.model.y
         # Extract position and orientation from the marker message
         x = marker_msg.pose.position.x
         y = marker_msg.pose.position.y
@@ -784,11 +848,6 @@ class HopliteSoldierNode(object):
         
         # Log the update at debug level
         rospy.logdebug("Updated own position from marker: x=%.1f y=%.1f θ=%.2f", x, y, theta)
-
-    def on_squad_pose(self, msg, soldier_id):
-        """Callback for when another soldier's pose is updated."""
-        if soldier_id in self.squad_members:
-            self.squad_members[soldier_id].update_pose(msg, rospy.Time.now())
             
     def on_squad_position(self, msg, soldier_id):
         """Callback for when another soldier's position marker is updated."""
