@@ -160,13 +160,13 @@ class PotentialFieldCollisionAvoidance(object):
                 adjusted_vel[1] *= scale_factor
 
         # Scale the adjusted velocity to the same magnitude as the desired velocity
-        desired_velocity_magnitude = math.hypot(vel[0], vel[1])
-        if desired_velocity_magnitude > 0:
-            current_velocity_magnitude = math.hypot(adjusted_vel[0], adjusted_vel[1])
-            if current_velocity_magnitude > 0:
-                scale_factor = desired_velocity_magnitude / current_velocity_magnitude
-                adjusted_vel[0] *= scale_factor
-                adjusted_vel[1] *= scale_factor
+        # desired_velocity_magnitude = math.hypot(vel[0], vel[1])
+        # if desired_velocity_magnitude > 0:
+        #     current_velocity_magnitude = math.hypot(adjusted_vel[0], adjusted_vel[1])
+        #     if current_velocity_magnitude > 0:
+        #         scale_factor = desired_velocity_magnitude / current_velocity_magnitude
+        #         adjusted_vel[0] *= scale_factor
+        #         adjusted_vel[1] *= scale_factor
         
         # Store the final adjusted velocity for visualization
         self.viz_data['adjusted_velocity'] = tuple(adjusted_vel)
