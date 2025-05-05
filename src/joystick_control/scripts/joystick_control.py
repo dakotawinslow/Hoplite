@@ -31,7 +31,7 @@ class control_point(object):
     self.x_vel = msg.axes[0] * -500
     self.y_vel = msg.axes[1] * 500
     self.theta_vel = msg.axes[2] * math.pi
-    self.update_control_point()
+    # self.update_control_point()
     
   def update_control_point(self):
     """ Update the control point based on the joystick input. """
@@ -80,6 +80,7 @@ if __name__ == '__main__':
     controller = control_point()
     # rospy.spin()
     while not rospy.is_shutdown():
+      controller.update_control_point()
       controller.publish_marker()
       controller.publish_twist()
       rospy.sleep(1.0 / FREQUENCY)
