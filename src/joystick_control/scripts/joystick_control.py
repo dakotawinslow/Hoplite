@@ -8,7 +8,7 @@ from tf.transformations import quaternion_from_euler
 from matplotlib import colors
 import math
 
-FREQUENCY = 2
+FREQUENCY = 10
 
 class control_point(object):
   def __init__(self):
