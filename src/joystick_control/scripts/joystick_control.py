@@ -8,7 +8,7 @@ from tf.transformations import quaternion_from_euler
 from matplotlib import colors
 import math
 
-FREQUENCY = 10
+FREQUENCY = 2
 
 class control_point(object):
   def __init__(self):
@@ -28,9 +28,9 @@ class control_point(object):
     
   def joy_callback(self, msg):
     """ Callback function for the joystick input. It receives the joystick input and updates the control point. """
-    self.x_vel = msg.axes[0] * -1000
-    self.y_vel = msg.axes[1] * 1000
-    self.theta_vel = msg.axes[2] * 2 * math.pi
+    self.x_vel = msg.axes[0] * -500
+    self.y_vel = msg.axes[1] * 500
+    self.theta_vel = msg.axes[2] * math.pi
     self.update_control_point()
     
   def update_control_point(self):
@@ -78,6 +78,7 @@ class control_point(object):
 if __name__ == '__main__':
   try:
     controller = control_point()
+    # rospy.spin()
     while not rospy.is_shutdown():
       controller.publish_marker()
       controller.publish_twist()
