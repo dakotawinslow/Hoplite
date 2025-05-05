@@ -220,7 +220,7 @@ class HopliteKinematicModel(object):
         # PD controller parameters
         self.linear_kp = 1.0  # Proportional gain for linear velocity
         self.linear_kd = 0.1  # Derivative gain for linear velocity
-        self.angular_kp = 1.0  # Proportional gain for angular velocity
+        self.angular_kp = 0.1  # Proportional gain for angular velocity
         self.angular_kd = 0.5  # Derivative gain for angular velocity
 
         # Deadzones
