@@ -332,7 +332,7 @@ class HopliteKinematicModel(object):
 
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # PD controller for linear velocity
-        vel_mag = self.kp * dist + self.kd * delta_error_mag
+        vel_mag = self.linear_kp * dist + self.linear_kd * delta_error_mag
 
         # Limit the velocity magnitude to max_v
         if vel_mag > self.max_v:
