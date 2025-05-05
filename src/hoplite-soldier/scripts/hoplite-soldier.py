@@ -220,7 +220,7 @@ class HopliteKinematicModel(object):
         # PD controller parameters
         self.linear_kp = 1.0  # Proportional gain for linear velocity
         self.linear_kd = 0.1  # Derivative gain for linear velocity
-        self.angular_kp = 0.1  # Proportional gain for angular velocity
+        self.angular_kp = 1.0  # Proportional gain for angular velocity
         self.angular_kd = 0.5  # Derivative gain for angular velocity
 
         # Deadzones
@@ -354,7 +354,7 @@ class HopliteKinematicModel(object):
 
         # PD controller for angular velocity
         th_err = self.angle_error()
-        ang_vel = self.angular_kp * th_err + self.angular_kd * (th_err - (self.last_theta - self.theta)) / dt
+        ang_vel = self.angular_kp * th_err # + self.angular_kd * (th_err - (self.last_theta - self.theta)) / dt
         # Limit the angular velocity to max_omega
         if abs(ang_vel) > self.max_omega:
             ang_vel = self.max_omega * np.sign(ang_vel)
