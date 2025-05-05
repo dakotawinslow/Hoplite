@@ -204,7 +204,7 @@ class HopliteKinematicModel(object):
         self.omega = 0.0
 
         # limits & accelerations
-        self.max_v = 500.0
+        self.max_v = 1000.0
         self.max_omega = math.pi 
         self.linear_acc = 1000.0
         self.angular_acc = 2 * math.pi 
