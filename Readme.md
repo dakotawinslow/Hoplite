@@ -1,4 +1,4 @@
-Summary
+# Summary
 
 Hoplite is a ROS‑based leader–follower formation control system for a small swarm of three AgileX LIMO robots equipped with Mecanum wheels. A human operator uses a wireless gamepad to command a virtual “center‑of‑mass” leader; the follower robots compute and navigate to their assigned positions using real‑time 120 Hz OptiTrack motion‑capture feedback bridged from ROS 2 into ROS 1. The system implements PD control for smooth omnidirectional movement and a repulsion‑force collision‑avoidance scheme. A simulated environment in RViz allows testing without hardware.
 Table of Contents
