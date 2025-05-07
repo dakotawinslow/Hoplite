@@ -1,7 +1,8 @@
 # Summary
 
 Hoplite is a ROS‑based leader–follower formation control system for a small swarm of three AgileX LIMO robots equipped with Mecanum wheels. A human operator uses a wireless gamepad to command a virtual “center‑of‑mass” leader; the follower robots compute and navigate to their assigned positions using real‑time 120 Hz OptiTrack motion‑capture feedback bridged from ROS 2 into ROS 1. The system implements PD control for smooth omnidirectional movement and a repulsion‑force collision‑avoidance scheme. A simulated environment in RViz allows testing without hardware.
-Table of Contents
+
+# Table of Contents
 
     Hardware Requirements
 
@@ -19,7 +20,7 @@ Table of Contents
 
     References
 
-Hardware Requirements
+### Hardware Requirements
 
     Three AgileX LIMO robots with Mecanum wheels
 
@@ -35,7 +36,7 @@ Hardware Requirements
 
     ROS 1–ROS 2 bridge package
 
-Software Requirements
+### Software Requirements
 
     ROS 1 Melodic
 
@@ -47,7 +48,7 @@ Software Requirements
 
     Python 3 with rospy, rclpy
 
-Hardware Setup
+### Hardware Setup
 
     Assemble Mecanum wheels on each LIMO following the [AgileX user manual][limo-doc]
 
@@ -61,9 +62,9 @@ Hardware Setup
 
         Ensure multicast/UDP traffic for VRPN is allowed.
 
-Software Installation & Build
+# Software Installation & Build
 
-# On each LIMO robot (Ubuntu 18.04 + ROS Melodic):
+### On each LIMO robot (Ubuntu 18.04 + ROS Melodic):
 sudo apt update && sudo apt install ros-melodic-desktop-full python-rosdep
 sudo rosdep init && rosdep update
 cd ~/catkin_ws/src
@@ -73,11 +74,11 @@ cd ~/catkin_ws
 rosdep install --from-paths src --ignore-src -r -y
 catkin_make
 
-# On OptiTrack host (Ubuntu 20.04 + ROS 2 Foxy):
+### On OptiTrack host (Ubuntu 20.04 + ROS 2 Foxy):
 sudo apt update && sudo apt install ros-foxy-desktop
 sudo apt install ros-foxy-ros1-bridge ros-foxy-vrpn-client-ros2
 
-Running the System
+# Running the System
 
     Launch OptiTrack → ROS 2 VRPN node
 
@@ -101,7 +102,7 @@ Visualization (optional)
 
     rviz -d $(rospack find hoplite)/rviz/formation.rviz
 
-Simulation
+# Simulation
 
 To run in simulation without hardware:
 
@@ -111,7 +112,7 @@ roslaunch hoplite sim.launch
 
     Uses the same leader and soldier nodes, but subscribes to simulated /gazebo/model_states instead of OptiTrack
 
-Project Structure
+# Project Structure
 
 hoplite/
 ├── launch/
@@ -136,7 +137,7 @@ hoplite/
 
     mocap_cleaner: Filters OptiTrack XZY → 2D XY poses
 
-References
+# References
 
     AgileX LIMO user manual and driver: [limo-doc][limo-doc]
 
