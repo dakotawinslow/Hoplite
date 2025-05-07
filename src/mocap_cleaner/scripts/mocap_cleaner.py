@@ -63,7 +63,7 @@ class MocapCleanerNode:
 
         # Publish the cleaned mocap data
         self.cleaned_mocap_publisher.publish(marker)
-        rospy.loginfo("Published cleaned mocap data: %s", msg)
+        # rospy.loginfo("Published cleaned mocap data: %s", msg)
 
 if __name__ == "__main__":
     try:
