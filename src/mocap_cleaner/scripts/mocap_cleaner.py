@@ -59,19 +59,19 @@ class MocapCleanerNode:
         marker.color.b = color[2]
         marker.color.a = color[3]
 
-        # self.marker = marker
+        self.marker = marker
 
         # Publish the cleaned mocap data
-        self.cleaned_mocap_publisher.publish(marker)
+        # self.cleaned_mocap_publisher.publish(marker)
         # rospy.loginfo("Published cleaned mocap data: %s", msg)
 
 if __name__ == "__main__":
     try:
         node = MocapCleanerNode()
-        rospy.spin()
-        # while not rospy.is_shutdown():
-        #     node.cleaned_mocap_publisher.publish(node.marker)
-        #     rospy.sleep(1.0 / FREQUENCY)
+        # rospy.spin()
+        while not rospy.is_shutdown():
+            node.cleaned_mocap_publisher.publish(node.marker)
+            rospy.sleep(1.0 / FREQUENCY)
     except rospy.ROSInterruptException:
         pass
 
